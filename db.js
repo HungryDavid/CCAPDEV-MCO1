@@ -1,39 +1,39 @@
 //sample database that stores the accounts
 
 const users = [
-  { username: "12414794", password: "pass123", role: "student" },
-  { username: "TECH-1999", password: "pass124", role: "labTech" }
+  { id_num: "12414794", password: "pass123", role: "student", fname: "David", lname: "Obar", email: "David@dlsu.edu.ph"},
+  { id_num: "TECH-1999", password: "pass124", role: "labTech", fname: "John", lname: "Doe", email: "JohnDoe@dlsu.edu.ph"}
 ];
 
-function registerUser(username, password) {
+function registerUser(id_num, password) {
   let role = "student"
-  if (username.startsWith("TECH-")) {
+  if (id_num.startsWith("TECH-")) {
     role = "labTech"
   }
-  users.push({ username, password, role });
-  alert(`User ${username} registered successfully!`);
+  users.push({ id_num, password, role });
+  alert(`User ${id_num} registered successfully!`);
 }
 
 let currentUser = null;
 let userType = "";
 
-function loginUser(username, password) {
-  let user = users.find(u => u.username === username && u.password === password);
+function loginUser(id_num, password) {
+  let user = users.find(u => u.id_num === id_num && u.password === password);
   if(user) {
     currentUser = user;
     userType = user.role;  
     window.location.href = "Front_Page.html";
   } else {
     alert("Invalid username or password.");
-    document.getElementById("username").value = "";
+    document.getElementById("id_num").value = "";
     document.getElementById("password").value = "";
   }
 }
 
 document.getElementById("log_in-btn").addEventListener("click", () => {
-  let username = document.getElementById("username").value;
+  let id_num = document.getElementById("id_num").value;
   let password = document.getElementById("password").value;
-  loginUser(username, password);
+  loginUser(id_num, password);
 });
 
 document.getElementById("sign_up-btn").addEventListener("click", () =>{
