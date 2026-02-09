@@ -15,6 +15,11 @@ body{
   height:150px;
   padding-top:30px;
   gap: 20px;
+  background-image: url(imgs/bg.png);
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  background-blend-mode: soft-light;
 }
 
 #Title-Page{
