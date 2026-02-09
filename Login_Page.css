@@ -1,0 +1,35 @@
+.container{
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 15px;
+  padding: 70px;
+}
+
+#Title-Page{
+  font-size: 50px;
+  font-family: "Montserrat", "Poppins", sans-serif;
+  padding: 30px;
+}
+
+.login-section{
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.login-input{
+  height: 20px;
+  width: 250px;
+  font-family: "Open Sans", "Roboto", sans-serif;
+}
+
+.btn-section{
+  display: flex;
+  width: 300px;
+  gap: 25px;
+}
+
+.login-btn{
+  font-family: "Inter", "Roboto", sans-serif;
+}

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lab Reservation Login Page</title>
+  <link rel="stylesheet" href="Login_Page.css">
+</head>
+<body>
+    <div class="container">
+      <h1 id="Title-Page"></h1>
+      <div class="login-section">
+        <input class="login-input" type="text" placeholder="ID Number" id="username">
+        <input class="login-input" type="password" placeholder="Password" id="password">
+        <div class="btn-section">
+          <button class="login-btn" id="log_in-btn"></button>
+          <button class="login-btn" id="sign_up-btn"></button>
+          <button class="login-btn" id="guest-btn"></button>
+        </div>
+      </div>
+    </div>
+    <script>
+      let title_page = document.getElementById("Title-Page");
+      title_page.innerHTML = "Lab Reservation System";
+      let login_btn = document.getElementById("log_in-btn");
+      login_btn.innerHTML = "Log In";
+      let sign_up_btn = document.getElementById("sign_up-btn");
+      sign_up_btn.innerHTML = "Sign Up"; 
+      let guest_btn = document.getElementById("guest-btn");
+      guest_btn.innerHTML = "Guess Only";
+    </script>
+    <script src="db.js"></script>
+</body>
+</html>
