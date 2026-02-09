@@ -2,7 +2,7 @@
 
 const users = [
   { username: "12414794", password: "pass123", role: "student" },
-  { username: "TECH-1903", password: "pass124", role: "labTech" }
+  { username: "TECH-1999", password: "pass124", role: "labTech" }
 ];
 
 function registerUser(username, password) {
@@ -18,7 +18,7 @@ let currentUser = null;
 let userType = "";
 
 function loginUser(username, password) {
-  const user = users.find(u => u.username === username && u.password === password);
+  let user = users.find(u => u.username === username && u.password === password);
   if(user) {
     currentUser = user;
     userType = user.role;  

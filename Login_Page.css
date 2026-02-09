@@ -1,35 +1,75 @@
+body{
+  margin: 0px;
+}
+
 .container{
   display: flex;
-  align-items: center;
   flex-direction: column;
-  gap: 15px;
-  padding: 70px;
+}
+
+.title-section{
+  display: flex;
+  padding-bottom: 80px;
+  background-color: #006937;
+  justify-content: center;
+  height:150px;
+  padding-top:30px;
+  gap: 20px;
 }
 
 #Title-Page{
   font-size: 50px;
   font-family: "Montserrat", "Poppins", sans-serif;
-  padding: 30px;
+  color: white;
+  margin-top: 65px;
+  margin-right: 30px;
+}
+
+#title-logo{
+  height: 200px;
+  border: 1px solid white;
+  border-radius: 100px;
+  background-color: white;
 }
 
 .login-section{
   display: flex;
   flex-direction: column;
   gap: 15px;
+  margin: 120px;
+  align-items: center;
 }
 
 .login-input{
-  height: 20px;
-  width: 250px;
+  height: 30px;
   font-family: "Open Sans", "Roboto", sans-serif;
+  border-radius: 50px;
+  width: 300px;
+  padding-left: 20px;
+  padding-right: 20px;
+  border: 2px solid #006937;
 }
 
 .btn-section{
   display: flex;
-  width: 300px;
+  width: 350px;
   gap: 25px;
 }
 
 .login-btn{
   font-family: "Inter", "Roboto", sans-serif;
+  width: 100px;
+  height: 35px;
+  border-radius: 20px;
+  border: 0px;
+  color: white;
+  background-color: #006937;
+}
+
+.login-btn:hover{
+  background-color: #00a053;
+}
+
+.login-btn:active{
+  background-color: #224a37;
 }
