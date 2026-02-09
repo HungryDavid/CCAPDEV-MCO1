@@ -4,13 +4,27 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Register</title>
+  <link rel="stylesheet" href="Register.css">
 </head>
 <body>
-  <h1>Hello</h1>
-  <!--
-  Get first name and last name, id number, password, email
-  Check if already registered (id number or email)
-  -->
+  <div class="container">
+    <div class="title-section">
+        <img id="title-logo" src="imgs/Login_page_logo.png" alt="">
+        <h1 id="Title-Page"></h1>
+    </div>
+    <div class="Registration-Form">
+      <h2 id="section-title">Registration Form</h2>
+      <!--
+        Get first name and last name, id number, password, email
+        Check if already registered (id number or email), data is stored on db.js for now
+      -->      
+    </div>
+    
+  </div>
+  <script>
+    let title_page = document.getElementById("Title-Page");
+      title_page.innerHTML = "Green Labs";
+  </script>
 </body>
 </html>
 

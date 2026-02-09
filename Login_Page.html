@@ -3,14 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lab Reservation Login Page</title>
+  <title>Green Labs</title>
   <link rel="stylesheet" href="Login_Page.css">
 </head>
 <body>
     <div class="container">
-      <h1 id="Title-Page"></h1>
+      <div class="title-section">
+        <img id="title-logo" src="imgs/Login_page_logo.png" alt="">
+        <h1 id="Title-Page"></h1>
+      </div>
       <div class="login-section">
-        <input class="login-input" type="text" placeholder="ID Number" id="username">
+        <input class="login-input" type="text" placeholder="ID Number" id="id_num">
         <input class="login-input" type="password" placeholder="Password" id="password">
         <div class="btn-section">
           <button class="login-btn" id="log_in-btn"></button>
@@ -21,7 +24,7 @@
     </div>
     <script>
       let title_page = document.getElementById("Title-Page");
-      title_page.innerHTML = "Lab Reservation System";
+      title_page.innerHTML = "Green Labs";
       let login_btn = document.getElementById("log_in-btn");
       login_btn.innerHTML = "Log In";
       let sign_up_btn = document.getElementById("sign_up-btn");
