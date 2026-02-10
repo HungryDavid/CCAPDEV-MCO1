@@ -15,10 +15,10 @@ body{
   height:150px;
   padding-top:30px;
   gap: 20px;
-  background-image: url(imgs/bg.png);
+  background-image: url(imgs/bg.jpg);
   background-repeat: no-repeat;
   background-size: cover;
-  background-position: center;
+  background-position:center;
   background-blend-mode: soft-light;
 }
 

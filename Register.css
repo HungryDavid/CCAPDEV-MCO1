@@ -10,7 +10,7 @@ body{
 .title-section{
   display: flex;
   padding-bottom: 40px;
-  background-image: url(imgs/bg.png);
+  background-image: url(imgs/bg.jpg);
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center;
