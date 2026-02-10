@@ -15,18 +15,66 @@
     <div class="Registration-Form">
       <h2 id="section-title">Registration Form</h2>
       <!--
-        Get first name and last name, id number, password, email
-        Check if already registered (id number or email), data is stored on db.js for now
-      -->      
+        Inputs: Done, Validation, Storing Data on db.js, Redirecting to login page after registration
+        WIP: Test cases
+      -->
+      <form class="container">
+        <div class="reg-section">
+          <label class="reg-label" for="first_name">First Name *</label>
+          <input class="reg-input" type="text" placeholder="First Name" id="first_name" required> 
+          <label class="reg-label" for="last_name">Last Name *</label>
+          <input class="reg-input" type="text" placeholder="Last Name" id="last_name" required>
+          <label class="reg-label" for="email_address">Email Address *</label>
+          <input class="reg-input" type="email" placeholder="Email Address" id="email_address" pattern=".*@dlsu.edu.ph" required>
+          <label class="reg-label" for="id_number">ID Number *</label>
+          <input class="reg-input" type="text" placeholder="ID Number" id="id_number" required>
+          <label class="reg-label" for="password">Password *</label>
+          <input class="reg-input" type="password" placeholder="Password" id="password" required>
+          <label class="reg-label" for="confirm_password">Confirm Password *</label>
+          <input class="reg-input" type="password" placeholder="Confirm Password" id="confirm_password" required>
+          <button class="reg-button" id="register_button" type="submit">Register</button>
+        </div>
+      </form>
     </div>
     
   </div>
   <script>
     let title_page = document.getElementById("Title-Page");
       title_page.innerHTML = "Green Labs";
+
+    let register_btn = document.getElementById("register_button");
+    register_btn.addEventListener("click", register);
+    function register(event) {
+      event.preventDefault(); // Prevent the default form submission
+
+      let first_name = document.getElementById("first_name").value;
+      let last_name = document.getElementById("last_name").value;
+      let email_address = document.getElementById("email_address").value;
+      let id_number = document.getElementById("id_number").value;
+      let password = document.getElementById("password").value;
+      let confirm_password = document.getElementById("confirm_password").value;
+
+      if (password !== confirm_password) {
+        alert("Passwords do not match!");
+        return;
+      }
+
+      if (users.some(u => u.id_num === id_number)) {
+        alert("ID number already registered!");
+        return;
+      }
+
+      if (users.some(u => u.email === email_address)) {
+        alert("Email already registered!");
+        return;
+      }
+
+      registerUser(id_number, password, first_name, last_name, email_address);
+      window.location.href = "Login_Page.html";
+    }
+      
   </script>
   <script src="db.js"></script>
-  <script src="lg.js"></script>
 </body>
 </html>
 
