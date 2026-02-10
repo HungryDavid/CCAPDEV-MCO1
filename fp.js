@@ -19,7 +19,8 @@ document.addEventListener("keydown", (e) => {
     const searchTerm = searchBar.value.trim().toUpperCase();
     const boxes = document.querySelectorAll(".box");
     boxes.forEach(box => {
-      if (box.getAttribute('data-name').startsWith(searchTerm)) {
+      const innerText = box.textContent;
+      if (box.getAttribute('data-name').startsWith(searchTerm) || innerText.includes(searchTerm)) {
         box.style.display = 'block';
       } else {
         box.style.display = 'none';
