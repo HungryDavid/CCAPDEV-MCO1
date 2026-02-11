@@ -9,7 +9,7 @@
 <body>
   <div class="container">
     <div class="title-section">
-        <img id="title-logo" src="imgs/Login_page_logo.png" alt="">
+        <img id="title-logo" src="imgs/logo.png" alt="">
         <h1 id="title-page"></h1>
     </div>
     <div class="registration-form">
@@ -38,42 +38,7 @@
     </div>
     
   </div>
-  <script>
-    let titlePage = document.getElementById("title-page");
-      titlePage.innerHTML = "Green Labs";
-
-    let register_btn = document.getElementById("register-button");
-    register_btn.addEventListener("click", register);
-    function register(event) {
-      event.preventDefault(); // Prevent the default form submission
-
-      let firstName = document.getElementById("first-name").value;
-      let lastName = document.getElementById("last-name").value;
-      let emailAddress = document.getElementById("email-address").value;
-      let idNumber = document.getElementById("id-number").value;
-      let password = document.getElementById("password").value;
-      let confirmPassword = document.getElementById("confirm-password").value;
-
-      if (password !== confirmPassword) {
-        alert("Passwords do not match!");
-        return;
-      }
-
-      if (users.some(u => u.id_num === idNumber)) {
-        alert("ID number already registered!");
-        return;
-      }
-
-      if (users.some(u => u.email === emailAddress)) {
-        alert("Email already registered!");
-        return;
-      }
-
-      registerUser(idNumber, password, firstName, lastName, emailAddress);
-      window.location.replace("login.html");
-    }
-      
-  </script>
   <script src="db.js"></script>
+  <script src="register.js"></script>
 </body>
 </html>

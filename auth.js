@@ -1,12 +1,3 @@
-function registerUser(idNum, password) {
-  let role = "student"
-  if (idNum.startsWith("TECH-")) {
-    role = "labTech"
-  }
-  users.push({idNum, password, role });
-  alert(`User ${idNum} registered successfully!`);
-}
-
 let currentUser = null;
 let userType = "";
 
