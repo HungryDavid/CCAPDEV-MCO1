@@ -1,0 +1,115 @@
+body{
+  margin: 0px;
+}
+
+.container{
+  display: grid;
+  grid-template-areas: 
+  "menu title-section"
+  "menu content";
+  grid-template-columns: 100px auto;
+  grid-template-rows: 170px 1fr; 
+  height: 100vh; 
+  gap: 8px;
+
+}
+
+.container div.title-section{
+  display: flex;
+  padding-bottom: 40px;
+  background-image: url(imgs/HS.jpg);
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  background-blend-mode: soft-light;
+  background-color: #006937;
+  height:100px;
+  padding-top:30px;
+  gap: 20px;
+  grid-area: title-section;
+}
+
+#Title-Page{
+  font-size: 50px;
+  font-family: "Montserrat", "Poppins", sans-serif;
+  color: white;
+  margin-top: 35px;
+  margin-left: 100px;
+}
+
+#title-logo{
+  padding: 5px;
+}
+
+.container div.menu{
+  display: flex;
+  flex-direction: column;
+  background-color: whitesmoke;
+  grid-area: menu;
+  gap: 5px;
+}
+
+.container div.content{
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+  grid-area: content;
+  gap: 5px;
+}
+
+#fp_input{
+  font-size: 15px;
+  margin-top: 100px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 80px;
+  height: 50px;
+  font-family: "Open Sans", "Roboto", sans-serif;
+  border-radius: 50px;
+  width: 500px;
+  padding-left: 50px;
+  padding-right: 50px;
+  border: 2px solid #006937;
+}
+
+.labs{
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 60px 50px;
+}
+
+.box{
+  height: 200px;
+  width: 200px;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  background-blend-mode: soft-light;
+  background-color: #006937;
+  border-radius: 30px;
+}
+
+.bg-gk { background-image: url('imgs/GK.jpg'); }
+.bg-ls { background-image: url('imgs/LS.png'); }
+.bg-vl { background-image: url('imgs/VL.jpg'); }
+
+.box-info{
+  position: absolute;
+  margin-top: 150px;
+  background-color: whitesmoke;
+  width: 197px;
+  border-bottom-left-radius: 30px;
+  border-bottom-right-radius: 30px;
+  border: 2px solid whitesmoke;
+}
+
+.info-text{
+  font-family: "Open Sans", "Roboto", sans-serif;
+  margin: 4px;
+  margin-left: 25px;
+}
+
+.icons{
+  height: 100px;
+}

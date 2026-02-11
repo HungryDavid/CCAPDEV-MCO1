@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register</title>
+  <link rel="stylesheet" href="register.css">
+</head>
+<body>
+  <div class="container">
+    <div class="title-section">
+        <img id="title-logo" src="imgs/Login_page_logo.png" alt="">
+        <h1 id="title-page"></h1>
+    </div>
+    <div class="registration-form">
+      <h2 id="section-title">Registration Form</h2>
+      <!--
+        Inputs: Done, Validation, Storing Data on db.js, Redirecting to login page after registration
+        WIP: Test cases
+      -->
+      <form class="container">
+        <div class="reg-section">
+          <label class="reg-label" for="first-name">First Name *</label>
+          <input class="reg-input" type="text" placeholder="First Name" id="first-name" required> 
+          <label class="reg-label" for="last-name">Last Name *</label>
+          <input class="reg-input" type="text" placeholder="Last Name" id="last-name" required>
+          <label class="reg-label" for="email-address">Email Address *</label>
+          <input class="reg-input" type="email" placeholder="Email Address" id="email-address" pattern=".*@dlsu.edu.ph" required>
+          <label class="reg-label" for="id-number">ID Number *</label>
+          <input class="reg-input" type="text" placeholder="ID Number" id="id-number" required>
+          <label class="reg-label" for="password">Password *</label>
+          <input class="reg-input" type="password" placeholder="Password" id="password" required>
+          <label class="reg-label" for="confirm-password">Confirm Password *</label>
+          <input class="reg-input" type="password" placeholder="Confirm Password" id="confirm-password" required>
+          <button class="reg-button" id="register-button" type="submit">Register</button>
+        </div>
+      </form>
+    </div>
+    
+  </div>
+  <script>
+    let titlePage = document.getElementById("title-page");
+      titlePage.innerHTML = "Green Labs";
+
+    let register_btn = document.getElementById("register-button");
+    register_btn.addEventListener("click", register);
+    function register(event) {
+      event.preventDefault(); // Prevent the default form submission
+
+      let firstName = document.getElementById("first-name").value;
+      let lastName = document.getElementById("last-name").value;
+      let emailAddress = document.getElementById("email-address").value;
+      let idNumber = document.getElementById("id-number").value;
+      let password = document.getElementById("password").value;
+      let confirmPassword = document.getElementById("confirm-password").value;
+
+      if (password !== confirmPassword) {
+        alert("Passwords do not match!");
+        return;
+      }
+
+      if (users.some(u => u.id_num === idNumber)) {
+        alert("ID number already registered!");
+        return;
+      }
+
+      if (users.some(u => u.email === emailAddress)) {
+        alert("Email already registered!");
+        return;
+      }
+
+      registerUser(idNumber, password, firstName, lastName, emailAddress);
+      window.location.replace("login.html");
+    }
+      
+  </script>
+  <script src="db.js"></script>
+</body>
+</html>
