@@ -17,11 +17,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const startTimeInput = document.getElementById("res-start-time");
     const durationInput = document.getElementById("res-duration");
 
-<<<<<<< HEAD
     // Create 40 seats
-=======
-    // 1. Generate 40 seats
->>>>>>> 0d67454855924aba7f576652537e29c3164dc088
     for (let i = 1; i <= 40; i++) {
         const seat = document.createElement("div");
         seat.classList.add("seat");
@@ -34,16 +30,9 @@ document.addEventListener("DOMContentLoaded", () => {
             seat.classList.add("occupied");
         }
 
-<<<<<<< HEAD
         seat.addEventListener("click", () => {
             console.log("Clicked seat:", i);
             // CASE A: Seat is occupied AND user is labTech 
-=======
-        // ONE click listener to rule them all
-        seat.addEventListener("click", () => {
-            console.log("Clicked seat:", i);
-            // CASE A: Seat is occupied AND user is labTech (CANCEL LOGIC)
->>>>>>> 0d67454855924aba7f576652537e29c3164dc088
             if (seat.classList.contains("occupied")) {
                 if (userType === "labTech") {
                     const owner = "Student ID: 12345678"; 
@@ -55,17 +44,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 } else {
                     alert("This seat is already reserved.");
                 }
-<<<<<<< HEAD
                 return;
             }
 
             // CASE B: Seat is available 
-=======
-                return; // Stop here so it doesn't try to "select" an occupied seat
-            }
-
-            // CASE B: Seat is available (SELECTION LOGIC)
->>>>>>> 0d67454855924aba7f576652537e29c3164dc088
             const prevSelected = document.querySelector(".seat.selected");
             if (prevSelected) prevSelected.classList.remove("selected");
 
@@ -77,11 +59,7 @@ document.addEventListener("DOMContentLoaded", () => {
         grid.appendChild(seat);
     }
 
-<<<<<<< HEAD
     // Handle Reservation Confirmation
-=======
-    // 2. Handle Reservation Confirmation
->>>>>>> 0d67454855924aba7f576652537e29c3164dc088
     confirmBtn.addEventListener("click", () => {
         const startTime = startTimeInput.value;
         const duration = durationInput.value;
