@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const allowedRoles = el.dataset.role.split(",");
 
     if (!allowedRoles.includes(userType)) {
-      el.style.display = "none";
+      el.remove();;
     }
   });
 });

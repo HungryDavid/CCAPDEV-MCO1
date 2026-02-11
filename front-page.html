@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Front Page</title>
   <link rel="stylesheet" href="front-page.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body>
   <!--
@@ -18,28 +19,54 @@
   The search bar has a filter for which building and availability of the laboratory (basically exclude full labs)
   There are 3 slots per laboratory that can only be reserved by the labtech to allocate for walk-ins, but they can also reserve the walk-ins to any available laboratory seat  
   -->
-  <div class="container">
+  <div class="grid-container">
 
-    <div class="title-section">
-      <h1 id="Title-Page"></h1>
-    </div>
+    <nav class="sidebar">
+      <div class="logo">
+        <img id="title-logo" src="imgs/logo.png" alt="">
+      </div>
 
-    <div class="menu">
-      <img id="title-logo" src="imgs/Login_page_logo.png" alt="">
-      <a href="front-page.html">
-        <img class="icons" src="imgs/home.png" alt="">
-      </a>
-    </div>
+      <div class="nav-items">
+        <a href="#" class="nav-item" data-role="technician,student,guest">
+          <i class="fa-solid fa-house"></i><span class="nav-text">Home</span>
+        </a>
+    
+        <a href="#" class="nav-item" data-role="technician,student">
+          <i class="fa-solid fa-calendar-check"></i><span class="nav-text">My Reservations</span>
+        </a>
+   
+      
+        <a href="#" class="nav-item" data-role="technician">
+          <i class="fa-solid fa-computer"></i><span class="nav-text">Manage Labs</span>
+        </a>
+
+        <a href="#" class="nav-item" data-role="technician,student">
+          <i class="fa-solid fa-circle-user"></i><span class="nav-text">Profile</span>
+        </a>
+
+        <a href="#" class="nav-item" data-role="technician,student">
+          <i class="fa-solid fa-magnifying-glass"></i><span class="nav-text">Search Users</span>
+        </a>
+      </div>  
+    </nav>
 
     <div class="content">
-      <input type="text" id="fp_input" placeholder="Search (ex. GK302)">
+      <div class="title-section">
+        <h1 id="title-page"></h1>
+      </div>
+
+      <div class="search">
+        <input type="text" id="fp_input" placeholder="Search (ex. GK302)">
+      </div>
+
       <div class="labs" id="labs-container"></div>
+      
     </div>
 
   </div>
 
   <script>
-    let title_page = document.getElementById("Title-Page");
+    let title_page = document.getElementById("title-page");
       title_page.innerHTML = "Dashboard";
   </script>
   <script src="db.js"></script>

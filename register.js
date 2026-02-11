@@ -2,13 +2,24 @@
 const registerButton = document.getElementById("register-button");
 registerButton.addEventListener("click", register);
 
-function registerUser(idNum, password) {
+function registerUser(idNumber,password,firstName,lastName,emailAddress) {
   let role = "student"
-  if (idNum.startsWith("TECH-")) {
+  if (idNumber.startsWith("TECH-")) {
     role = "labTech"
   }
-  users.push({idNum, password, role });
-  alert(`User ${idNum} registered successfully!`);
+
+  const newUser = {
+            idNum: idNumber,
+            password: password,
+            role: role,
+            fName: firstName,
+            lName: lastName,
+            email: emailAddress
+  };
+
+  saveUser(newUser);
+  alert(`User ${idNumber} registered successfully!`);
+  window.location.replace("index.html");
 }
 
 
@@ -37,16 +48,6 @@ function register(event) {
         return;
       }
 
-      const newUser = {
-            idNum: idNumber,
-            password: password,
-            role: 'user',
-            fName: firstName,
-            lName: lastName,
-            email: emailAddress
-        };
-
-      saveUser(newUser);
-      alert("Account Created!");
-      window.location.replace("index.html");
+      registerUser(idNumber,password,firstName,lastName,emailAddress);
+      
     }
