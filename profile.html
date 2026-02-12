@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Front Page</title>
+  <link rel="stylesheet" href="front-page.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+  <div class="grid-container">
+
+    <nav class="sidebar">
+      <div class="logo">
+        <img id="title-logo" src="imgs/logo.png" alt="">
+      </div>
+
+      <div class="nav-container" id="nav-container">
+        <script src="./components/navbar.js"></script>
+        <script src="./util/access-control.js"></script>
+      </div>  
+    </nav>
+
+    <div class="content">
+      <div class="title-section">
+        <h1 id="title-page">My Profile</h1>
+      </div>
+
+      <div class="profile">
+        <div>img</div>
+        <div>name</div>
+        <div>description</div>
+      </div>
+
+      <div class="reservations" id="reservations"></div>
+      
+    </div>
+
+  </div>
+
+  <script src="db.js"></script>
+</body>
+</html>

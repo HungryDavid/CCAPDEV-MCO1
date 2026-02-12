@@ -38,3 +38,10 @@ document.getElementById("guest-btn").addEventListener("click", () => {
   //window.location.replace("front-page.html");
   window.location.href = "front-page.html";
 });
+
+
+const logoutUser = () => {
+    sessionStorage.clear();
+    localStorage.setItem('logout-event', Date.now()); 
+    window.location.href = "login.html";
+};
