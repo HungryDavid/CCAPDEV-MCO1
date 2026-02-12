@@ -35,7 +35,7 @@ function displayRooms() {
         }
 
         const boxHTML = `
-            <div class="box ${buildingClass}" data-name="${room.id}">
+            <div class="box ${buildingClass}" data-name="${room.id}" onclick="goToReservation('${room.id}')">
                 <div class="box-info">
                     <p class="info-text">${room.name}</p>
                     <p class="info-text">${room.status}</p>
@@ -44,6 +44,10 @@ function displayRooms() {
         `;
         labsContainer.insertAdjacentHTML('beforeend', boxHTML);
     });
+}
+
+function goToReservation(roomId) {
+    window.location.href = `reservation.html?lab=${roomId}`;
 }
 
 displayRooms();

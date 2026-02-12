@@ -1,5 +1,4 @@
-//Show front page content based on user typ
-
+//Show front page content based on user type
 const userType = sessionStorage.getItem("userType");
 
   document.querySelectorAll("[data-role]").forEach(el => {
