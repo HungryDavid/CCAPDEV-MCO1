@@ -33,6 +33,39 @@ const reservations = [
   { reservationId: "5", userId: "2021005", labId: "GK302", seatNumber: 10, date: "2026-02-15", timeSlot: "11:00 - 11:30", requestTimestamp: new Date().toISOString(), isAnonymous: false, status: "confirmed" }
 ];
 
+const labSlots = [
+    { 
+        labId: "GK202", 
+        reservations: [
+            { timeSlot: "09:00 - 09:30", seat: 17, userId: "12414794" }, 
+            { timeSlot: "11:00 - 12:00", seat: 1, userId: "12345678" },
+            { timeSlot: "14:00 - 15:30", seat: 5, userId: "2021001" },
+            { timeSlot: "15:00 - 16:00", seat: 7, userId: "2021011" }
+        ] 
+    },
+    { 
+        labId: "GK302", 
+        reservations: [
+            { timeSlot: "11:00 - 11:30", seat: 10, userId: "2021005" }
+        ] 
+    },
+    { 
+        labId: "GK301", 
+        reservations: [
+            { timeSlot: "07:30 - 09:30", seat: 1, userId: "12123456" }, 
+            { timeSlot: "09:00 - 09:30", seat: 5, userId: "2021001" }, 
+            { timeSlot: "09:00 - 09:30", seat: 12, userId: "2021002" },
+            { timeSlot: "09:30 - 10:00", seat: 5, userId: "2021001" }
+        ] 
+    },
+    { 
+        labId: "V201", 
+        reservations: [
+            { timeSlot: "07:30 - 09:30", seat: 1, userId: "2021004" }
+        ] 
+    }
+];
+
 function initDB() {
     if (!localStorage.getItem('users_db')) {
         localStorage.setItem('users_db', JSON.stringify(users));
@@ -43,10 +76,37 @@ function initDB() {
     if (!localStorage.getItem('reservations_db')) {
         localStorage.setItem('reservations_db', JSON.stringify(reservations));
     }
+    if (!localStorage.getItem('lab_slots_db')) {
+        localStorage.setItem('lab_slots_db', JSON.stringify(labSlots));
+    }
     console.log("Database initialized in LocalStorage!");
 }
 
 initDB();
+
+const timeToMins = (timeStr) => {
+    const [hrs, mins] = timeStr.trim().split(':').map(Number);
+    return (hrs * 60) + mins;
+};
+
+function isSeatTaken(labId, seatNum, requestedStartTime, durationMins) {
+    const allLabSlots = JSON.parse(localStorage.getItem('lab_slots_db')) || [];
+    const lab = allLabSlots.find(l => l.labId === labId);
+    if (!lab) return null;
+
+    const reqStart = timeToMins(requestedStartTime);
+    const reqEnd = reqStart + parseInt(durationMins); 
+
+    return lab.reservations.find(res => {
+        if (res.seat !== parseInt(seatNum)) return false;
+
+        const times = res.timeSlot.split('-');
+        const exStart = timeToMins(times[0]);
+        const exEnd = timeToMins(times[1]);
+
+        return (reqStart < exEnd && reqEnd > exStart);
+    });
+}
 
 function findUserById(idNum) {
     const users = JSON.parse(localStorage.getItem('users_db')) || [];
