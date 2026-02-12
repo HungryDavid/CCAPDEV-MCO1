@@ -85,7 +85,7 @@ i{
   height: 50px;
   font-family: "Open Sans", "Roboto", sans-serif;
   border-radius: 50px;
-  width: 50%;
+  width: min(80%, 650px);
   padding-left: 50px;
   padding-right: 50px;
   border: 2px solid #006937;
