@@ -32,6 +32,47 @@ if (!rooms) {
     localStorage.setItem('room_db', JSON.stringify(rooms));
 }
 
+const usersData = [
+  { id: "2021001", email: "john_doe@dlsu.edu.ph", password: "password123", role: "student", name: "John Doe", description: "CS major", profilePic: "john.jpg", isAnonymousDefault: false },
+  { id: "2021002", email: "jane_smith@dlsu.edu.ph", password: "password123", role: "student", name: "Jane Smith", description: "ID 121", profilePic: "jane.png", isAnonymousDefault: true },
+  { id: "TECH01", email: "tech@dlsu.edu.ph", password: "password123", role: "lab_tech", name: "Sir Robert", description: "Gox Lab Tech", profilePic: "tech.jpg" },
+  { id: "2021004", email: "mark_v@dlsu.edu.ph", password: "password123", role: "student", name: "Mark Villanueva", description: "Game Dev", profilePic: "mark.jpg", isAnonymousDefault: false },
+  { id: "2021005", email: "lara_c@dlsu.edu.ph", password: "password123", role: "student", name: "Lara Croft", description: "Civil Eng", profilePic: "lara.jpg", isAnonymousDefault: false }
+];
+
+const labsData = [
+  { id: "GK301", name: "Gox Lab 301", totalSeats: 30 },
+  { id: "GK302", name: "Gox Lab 302", totalSeats: 25 },
+  { id: "V201", name: "Velasco 201", totalSeats: 40 }
+];
+
+const reservationsData = [
+  { reservationId: "1", userId: "2021001", labId: "GK301", seatNumber: 5, date: "2026-02-13", timeSlot: "09:00 - 09:30", requestTimestamp: new Date().toISOString(), isAnonymous: false, status: "confirmed" },
+  { reservationId: "2", userId: "2021002", labId: "GK301", seatNumber: 12, date: "2026-02-13", timeSlot: "09:00 - 09:30", requestTimestamp: new Date().toISOString(), isAnonymous: true, status: "confirmed" },
+  { reservationId: "3", userId: "2021004", labId: "V201", seatNumber: 1, date: "2026-02-14", timeSlot: "14:00 - 14:30", requestTimestamp: new Date().toISOString(), isAnonymous: false, status: "confirmed" },
+  { reservationId: "4", userId: "2021001", labId: "GK301", seatNumber: 5, date: "2026-02-13", timeSlot: "09:30 - 10:00", requestTimestamp: new Date().toISOString(), isAnonymous: false, status: "confirmed" },
+  { reservationId: "5", userId: "2021005", labId: "GK302", seatNumber: 10, date: "2026-02-15", timeSlot: "11:00 - 11:30", requestTimestamp: new Date().toISOString(), isAnonymous: false, status: "confirmed" }
+];
+
+// 2. Function to initialize LocalStorage
+function initDB() {
+    // Only set if they don't exist to avoid overwriting existing data
+    if (!localStorage.getItem('users')) {
+        localStorage.setItem('users', JSON.stringify(usersData));
+    }
+    if (!localStorage.getItem('labs')) {
+        localStorage.setItem('labs', JSON.stringify(labsData));
+    }
+    if (!localStorage.getItem('reservations')) {
+        localStorage.setItem('reservations', JSON.stringify(reservationsData));
+    }
+    console.log("Database initialized in LocalStorage!");
+}
+
+initDB();
+
+
+
 const saveUser = (user) => {
     console.log(users);
     users.push(user);

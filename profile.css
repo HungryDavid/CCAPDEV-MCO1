@@ -152,6 +152,35 @@ textarea:not([readonly]) {
   margin-bottom: 0.6rem;
 }
 
+.reservations-container{
+  min-width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.reservations{
+  min-width: 100%;
+}
+
+table{
+  margin-left: auto;
+  margin-right: auto;
+  width: 80%;
+  border-collapse: collapse; 
+}
+
+th, td {
+  border: 1px solid #ddd; 
+  padding: 8px; 
+  text-align: left; 
+}
+
+.reservations-container h1{
+  padding: 2rem 0 1rem 0 ;
+  font-size: 1.5rem;
+}
 
 
 
