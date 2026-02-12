@@ -7,7 +7,7 @@
 .container{
   display: flex;
   flex-direction: column;
-  background: linear-gradient(rgba(8, 120, 48, 0.15), rgba(0, 0, 0, 0.4)), url('./imgs/bg.jpg');
+  background: linear-gradient(rgba(8, 120, 48, 0.15), rgba(0, 0, 0, 0.2)), url('./imgs/bg.jpg');
   background-repeat: no-repeat;
   background-size: cover;
   background-position:center;
@@ -16,13 +16,14 @@
 }
 
 .login-section{
-  background-color: rgba(0, 0, 0, 0.6); 
+  background-color: rgba(0, 0, 0, 0.7); 
   display: flex;
   flex-direction: column;
   gap: 15px;
   width: min(90vw, 450px);
   padding: 2rem 3.5rem;
   border-radius: 20px;
+  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5);
 }
 
 .title-section{
