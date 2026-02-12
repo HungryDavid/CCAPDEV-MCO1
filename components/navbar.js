@@ -51,7 +51,7 @@ const renderNavbar = () => {
     
     if (document.getElementById('search-users'))
       document.getElementById('search-users').addEventListener("click", function(){
-        window.location.replace('./front-page.html'); 
+        window.location.replace('./search-user.html'); 
     });
 
     if (document.getElementById('logout'))

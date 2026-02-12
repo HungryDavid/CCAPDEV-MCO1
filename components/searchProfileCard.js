@@ -1,4 +1,4 @@
-const MyProfileCard = (user) => {
+const SearchProfileCard = (user) => {
     // We include only the profile-specific CSS here
     const style = `
         <style>
@@ -16,13 +16,6 @@ const MyProfileCard = (user) => {
             .profile-description textarea:not([readonly]) {
                 border: 2px solid #000; background: #fff;
             }
-            .profile-edit { display: flex; justify-content: center; }
-            #edit-btn {
-                padding: 8px 0; min-width: 150px; font-size: 0.8rem;      
-                background-color: transparent; border: 1px solid #006937;
-                cursor: pointer;
-            }
-            #edit-btn i { margin-right: 5px; font-size: 0.8rem; }
         </style>
     `;
 
@@ -33,11 +26,6 @@ const MyProfileCard = (user) => {
         <div class="profile-name" id="profile-name">${user.fName + " " + user.lName}</div>
         <div class="profile-description">
             <textarea id="description" rows="1" wrap="soft" readonly>${user.description || 'No description provided.'}</textarea>
-        </div>
-        <div class="profile-edit">
-            <button id="edit-btn">
-                <i class="fa fa-pencil" aria-hidden="true"></i><span>Edit Profile</span>
-            </button>
         </div>
     `;
 

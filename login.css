@@ -4,6 +4,16 @@
   padding: 0;
 }
 
+#note{
+  display: absolute;
+  top: 0;
+  z-index: 1;
+  width: 100%;
+  align-items: flex-start;
+  background-color: lightgreen;
+  font-weight: bold;
+}
+
 .container{
   display: flex;
   flex-direction: column;
