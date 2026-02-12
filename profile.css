@@ -51,6 +51,15 @@
   font-weight: bold;
 }
 
+a{
+  width: 100%;
+  padding: 0.7rem;
+}
+
+a:hover{
+  background-color: gainsboro;
+}
+
 i{
   font-size: 1.7rem;
   color: darkslategray;
@@ -76,73 +85,76 @@ i{
   margin-left: 4rem;
 }
 
-#fp_input{
-  font-size: 15px;
-  margin-top: 100px;
-  margin-left: auto;
-  margin-right: auto;
-  margin-bottom: 80px;
-  height: 50px;
-  font-family: "Open Sans", "Roboto", sans-serif;
-  border-radius: 50px;
-  width: 50%;
-  padding-left: 50px;
-  padding-right: 50px;
-  border: 2px solid #006937;
+.profile-picture img{
+  max-width: 180px;
+  border-radius: 90px;
 }
 
-.labs{
-  display: grid;
-  grid-template-columns: repeat(auto-fit,minmax(200px, 1fr));
-  padding: 5%;
-  gap: 30px;
+.profile-picture{
+  display: flex;
+  justify-content: center;
+  padding: 2rem 0 0.5rem 0;
+}
+
+.profile-name{
+  display: flex;
+  justify-content: center;
+  font-size: 1.6rem;
+  font-weight: bold;
+}
+
+.profile-description{
+  display: flex;
+  justify-content: center;
+  padding: 0.5rem 0;
+}
+
+.profile-description textarea {
+  field-sizing: content;
+  overflow-wrap: anywhere;
+  min-height: 1lh;
+  max-height: 10lh;
+  width: 80%;
+  text-align: center;
+  resize: none;
+  
+  transition: all 0.2s ease;
+  border: 2px solid transparent; 
+  background: transparent;
+  outline: none;
+  font-size: 1rem;  
+  
+}
+textarea:not([readonly]) {
+  border: 2px solid #000; 
+  background: #fff;
+}
+
+#edit-btn i{
+  margin: 0 5px 0 0;
+  font-size: 0.8rem;
+}
+
+#edit-btn{
+  padding: 8px 0;
+  min-width: 150px;
+  font-size: 0.8rem;      
+  background-color: transparent;
+  border-color: #006937;
+}
+
+.profile-edit{
+  display: flex;
   justify-content: center;
 }
 
-.box{
-  position:relative;
-  height: 200px;
-  width: 100%;
-  background-repeat: no-repeat;
-  background-size: cover;
-  background-position: center;
-  background-blend-mode: soft-light;
-  background-color: #006937;
-  border-radius: 30px;
-}
-
-.box-info{
-  position: absolute;
-  bottom: 0;
-  background-color: whitesmoke;
-  width: 100%;
-  border-bottom-left-radius: 30px;
-  border-bottom-right-radius: 30px;
-  border: 2px solid whitesmoke;
+.profile-description{
+  margin-bottom: 0.6rem;
 }
 
 
 
-.bg-gk { background-image: url('imgs/GK.jpg'); }
-.bg-ls { background-image: url('imgs/LS.png'); }
-.bg-vl { background-image: url('imgs/VL.jpg'); }
 
-
-
-.info-text{
-  font-family: "Open Sans", "Roboto", sans-serif;
-  margin: 4px;
-  margin-left: 25px;
-}
-
-a{
-  width: 100%;
-  padding: 0.7rem;
-}
-
-a:hover{
-  background-color: gainsboro;
-}
 
 @media (min-width: 768px) {
   .grid-container {
