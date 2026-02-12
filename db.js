@@ -1,10 +1,10 @@
 
 const users = [
-  { idNum: "12414794", email: "john_doe@dlsu.edu.ph", password: "password123", role: "student", name: "David Obar", description: "CS major", profilePic: "john.jpg", isPublicProfile: false },
-  { idNum: "12345678", email: "jane_smith@dlsu.edu.ph", password: "password123", role: "student", name: "Jane Smith", description: "ID 121", profilePic: "jane.png", isPublicProfile: true },
-  { idNum: "TECH01", email: "tech@dlsu.edu.ph", password: "password123", role: "technician", name: "Sir Robert", description: "Lab Tech", profilePic: "tech.jpg" },
-  { idNum: "12123456", email: "mark_v@dlsu.edu.ph", password: "password123", role: "student", name: "Mark Villanueva", description: "Game Dev", profilePic: "mark.jpg", isPublicProfile: false },
-  { idNum: "12012345", email: "lara_c@dlsu.edu.ph", password: "password123", role: "student", name: "Lara Croft", description: "Civil Eng", profilePic: "lara.jpg", isPublicProfile: false }
+  { idNum: "12414794", email: "john_doe@dlsu.edu.ph", password: "password123", role: "student", fName: "David", lName:"Obar", description: "CS major", profilePic: "john.jpg", isPublicProfile: false },
+  { idNum: "12345678", email: "jane_smith@dlsu.edu.ph", password: "password123", role: "student", fName: "Jane", lName:"Smith", description: "ID 121", profilePic: "jane.png", isPublicProfile: true },
+  { idNum: "TECH01", email: "tech@dlsu.edu.ph", password: "password123", role: "technician", fName: "Sir", lName:"Robert", description: "Lab Tech", profilePic: "tech.jpg" },
+  { idNum: "12123456", email: "mark_v@dlsu.edu.ph", password: "password123", role: "student", fName: "Mark", lName:"Villanueva", description: "Game Dev", profilePic: "mark.jpg", isPublicProfile: false },
+  { idNum: "12012345", email: "lara_c@dlsu.edu.ph", password: "password123", role: "student", fName: "Lara", lName:"Croft", description: "Civil Eng", profilePic: "lara.jpg", isPublicProfile: false }
 ];
 
 const rooms = [
@@ -47,6 +47,19 @@ function initDB() {
 }
 
 initDB();
+
+function findUserById(idNum) {
+    const users = JSON.parse(localStorage.getItem('users_db')) || [];
+
+    const user = users.find(u => u.idNum === idNum);
+
+    if (user) {
+        return user;
+    } else {
+        return null;
+    }
+}
+
 
 const getAllUsers = () => {
     return JSON.parse(localStorage.getItem('my_user_db')) || [];

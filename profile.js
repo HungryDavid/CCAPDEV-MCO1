@@ -1,5 +1,14 @@
 const editButton = document.getElementById('edit-btn');
 const area = document.getElementById('description');
+const profileName = document.getElementById('profile-name');
+
+const storedUser = findUserById(localStorage.getItem("currentUserId"));
+if (storedUser) {
+    profileName.textContent = storedUser.fName + " " + storedUser.lName; // Access properties like firstName
+    description.textContent = storedUser.description;
+
+  }
+
 
 editButton.addEventListener('click', () => {
   const isReadOnly = area.readOnly;
@@ -13,5 +22,4 @@ editButton.addEventListener('click', () => {
     area.readOnly = true;
     editButton.innerHTML = '<i class="fa fa-pencil" aria-hidden="true"></i><span>Edit Profile</span>';
   }
-
 });

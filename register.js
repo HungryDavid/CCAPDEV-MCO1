@@ -5,7 +5,7 @@ registerButton.addEventListener("click", register);
 function registerUser(idNumber,password,firstName,lastName,emailAddress) {
   let users = JSON.parse(localStorage.getItem('users_db')) || [];
 
-  if (users.some(u => u.email === email || u.id === id)) {
+  if (users.some(u => u.email === emailAddress || u.id === idNumber)) {
       alert("User already exists!");
       return;
   }
