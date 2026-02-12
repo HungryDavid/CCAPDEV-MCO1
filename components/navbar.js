@@ -56,8 +56,13 @@ const renderNavbar = () => {
 
     if (document.getElementById('logout'))
       document.getElementById('logout').addEventListener("click", function(){
-        window.location.href = './index.html'; 
+
+        sessionStorage.clear();
+        localStorage.removeItem('currentUserId');
+        window.location.href = "index.html";
+
     });
+
 };
 
 renderNavbar();

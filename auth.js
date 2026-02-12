@@ -2,13 +2,15 @@ let currentUser = null;
 let userType = "";
 
 function loginUser(idNum, password) {
-  let user = users.find(u => u.idNum === idNum && u.password === password);
+  const users = JSON.parse(localStorage.getItem('users_db')) || [];
+  const user = users.find(u => u.idNum === idNum && u.password === password);
   if(user) {
     currentUser = user;
     userType = user.role;  
     //window.location.replace("front-page.html");
     window.location.href = "front-page.html";
     sessionStorage.setItem("userType", user.role); 
+    localStorage.setItem('currentUserId', user.idNum);
   } else {
     alert("Invalid username or password.");
     document.getElementById("idNum").value = "";
@@ -39,9 +41,3 @@ document.getElementById("guest-btn").addEventListener("click", () => {
   window.location.href = "front-page.html";
 });
 
-
-const logoutUser = () => {
-    sessionStorage.clear();
-    localStorage.setItem('logout-event', Date.now()); 
-    window.location.href = "login.html";
-};

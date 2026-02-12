@@ -21,7 +21,7 @@ const labsContainer = document.getElementById("labs-container");
 
 function displayRooms() {
     labsContainer.innerHTML = "";
-    const rooms_db = localStorage.getItem('room_db')
+    const rooms_db = localStorage.getItem('rooms_db')
     const rooms = JSON.parse(rooms_db);
 
     rooms.forEach(room => {

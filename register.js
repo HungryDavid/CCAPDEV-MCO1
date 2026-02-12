@@ -3,6 +3,14 @@ const registerButton = document.getElementById("register-button");
 registerButton.addEventListener("click", register);
 
 function registerUser(idNumber,password,firstName,lastName,emailAddress) {
+  let users = JSON.parse(localStorage.getItem('users_db')) || [];
+
+  if (users.some(u => u.email === email || u.id === id)) {
+      alert("User already exists!");
+      return;
+  }
+
+
   let role = "student"
   if (idNumber.startsWith("TECH-")) {
     role = "labTech"
@@ -17,13 +25,21 @@ function registerUser(idNumber,password,firstName,lastName,emailAddress) {
             email: emailAddress
   };
 
-  saveUser(newUser);
+  users.push(newUser);
+  localStorage.setItem('users_db', JSON.stringify(users));
   alert(`User ${idNumber} registered successfully!`);
   window.location.replace("index.html");
 }
 
 
 function register(event) {
+  const form = document.getElementById("form-register");
+      
+  if (!form.checkValidity()) {
+    form.reportValidity(); 
+    return; 
+  }
+
       event.preventDefault(); // Prevent the default form submission
 
       let firstName = document.getElementById("first-name").value;
@@ -49,5 +65,4 @@ function register(event) {
       }
 
       registerUser(idNumber,password,firstName,lastName,emailAddress);
-      
-    }
+}
