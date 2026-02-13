@@ -3,6 +3,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const params = new URLSearchParams(window.location.search);
     const labId = params.get('lab');
 
+    if (sessionStorage.getItem("userType"=="guest")){
+        if (document.getElementById("confirm-res-btn"))
+            document.getElementById("confirm-res-btn").style.display = 'none';
+    }
+
     if (!labId) {
         alert("No laboratory selected!");
         window.location.href = "front-page.html";

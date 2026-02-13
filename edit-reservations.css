@@ -183,6 +183,15 @@ th, td {
 }
 
 
+td i{
+  font-size: 1.3rem;
+  color:black;
+  padding: 10px;
+}
+
+
+
+
 @media (min-width: 768px) {
   .grid-container {
     grid-template-columns: 240px 1fr;

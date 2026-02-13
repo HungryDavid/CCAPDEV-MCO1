@@ -27,6 +27,36 @@ const SearchProfileCard = (user) => {
         <div class="profile-description">
             <textarea id="description" rows="1" wrap="soft" readonly>${user.description || 'No description provided.'}</textarea>
         </div>
+
+
+        <div class="reservations-container" id="reservations-container">
+        <h1>Current Reservations</h1>
+
+        <div class="reservations">
+          <table>
+            <thead>
+              <tr>
+                <th>Laboratory</th>
+                <th>Date</th>
+                <th>Time</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>GK310</td>
+                <td>02/15/2026</td>
+                <td>07:30AM-08:00AM</td>
+              </tr>
+
+            </tbody>
+          </table>
+
+
+        </div>
+
+      </div>
+      
+    </div>
     `;
 
     return style + html;

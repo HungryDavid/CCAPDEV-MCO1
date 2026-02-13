@@ -36,7 +36,7 @@ const renderNavbar = () => {
 
     if (document.getElementById('reservations'))
       document.getElementById('reservations').addEventListener("click", function(){
-        window.location.href = './front-page.html'; 
+        window.location.href = './edit-reservations.html'; 
     });
 
     if (document.getElementById('manage-labs'))
