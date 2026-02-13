@@ -34,6 +34,16 @@ function attachLogic() {
 
         }
     });
+
+    if (sessionStorage.getItem("userType")=="technician"){
+        const reservationsContainer = document.getElementById("reservations-container");
+
+        if (reservationsContainer) { 
+            reservationsContainer.remove();
+        }
+    }
+        
+
 }
 
 document.addEventListener('DOMContentLoaded', initProfile);

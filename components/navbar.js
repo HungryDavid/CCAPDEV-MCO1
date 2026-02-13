@@ -4,7 +4,7 @@ const renderNavbar = () => {
           <i class="fa-solid fa-house"></i><span class="nav-text">Home</span>
         </a>
     
-        <a href="#" class="nav-item" id="reservations" data-role="technician,student">
+        <a href="#" class="nav-item" id="reservations" data-role="student">
           <i class="fa-solid fa-calendar-check"></i><span class="nav-text">My Reservations</span>
         </a>
    

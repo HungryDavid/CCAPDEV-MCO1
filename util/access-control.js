@@ -8,3 +8,4 @@ const userType = sessionStorage.getItem("userType");
       el.remove();;
     }
   });
+
