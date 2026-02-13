@@ -1,5 +1,4 @@
 const SearchProfileCard = (user) => {
-    // We include only the profile-specific CSS here
     const style = `
         <style>
             .profile-picture img { max-width: 180px; border-radius: 90px; }

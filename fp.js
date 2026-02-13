@@ -1,3 +1,4 @@
+//hard coded db
 //Searchbar function
 const searchBar = document.getElementById("fp_input");
 

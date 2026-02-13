@@ -8,17 +8,6 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body>
-  <!--
-  There are three user types labTech, Guest and Student
-  Their types will determine on what they can see and do
-  -->
-  <!--
-  The front page has a search tool for the lab names (ex. GK306, LS202, VL205), it also has a sliding window to go home, preview the user's account
-  (view and edit), preview reservations (view and edit), and logout.
-  The db.js should also have a database for the reservations making sure that double bookings are prevented. 
-  The search bar has a filter for which building and availability of the laboratory (basically exclude full labs)
-  There are 3 slots per laboratory that can only be reserved by the labtech to allocate for walk-ins, but they can also reserve the walk-ins to any available laboratory seat  
-  -->
   <div class="grid-container">
 
     <app-header title="Home"></app-header>
@@ -27,15 +16,45 @@
       <div class="content">
         
 
-        <div class="search">
-          <input type="text" id="fp_input" placeholder="Search (ex. GK302)">
-        </div>
+        <form id="search-laboratory">
+          
+          <div class="date-container">
+            <i class="fa fa-angle-left" aria-hidden="true"></i>
+            <p>Fri 13 February </p>
+            <i class="fa fa-angle-right" aria-hidden="true"></i>
+          </div>
+
+          <div class="time-container">
+            <label for="bookingTime">Time Slot:</label>
+            <select id="bookingTime" name="bookingTime" required>
+              <option value="">-- Choose a time --</option>
+              <option value="07:00">07:00</option>
+              <option value="07:30">07:30</option>
+              <option value="08:00">08:00</option>
+              <option value="08:30">08:30</option>
+              <option value="09:00">09:00</option>
+              <option value="09:30">09:30</option>
+              
+            </select>
+          </div>
+
+          <div class="lab-container">
+            <label for="labName">Lab Name:</label>
+            <select id="labName" name="labName" required>
+              <option value="" disabled selected>Select a lab</option>
+              <option value="GK301">GK301</option>
+              <option value="GK302">GK302</option>
+              <option value="LS210">LS210</option>
+              <option value="LS211">LS211</option>
+              <option value="V207">V207</option>
+            </select>
+          </div>
+        </form>
 
         <div class="labs" id="labs-container"></div>
         
       </div>
 
-    
 
   </div>
 
