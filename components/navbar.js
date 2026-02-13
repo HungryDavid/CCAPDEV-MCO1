@@ -6,10 +6,11 @@ class NavBar extends HTMLElement {
     this.routes = [
       { label: 'Home', id: "home", path: './front-page.html', roles: ['guest', 'student', 'technician'], icon: 'fa-solid fa-house' },
       { label: 'Reservations', id: "reservations", path: './edit-reservations.html', roles: ['student'], icon: 'fa-solid fa-calendar' },
-      { label: 'Manage Labs', id: "manage-labs", path: './front-page.html', roles: ['technician'], icon: 'fa-solid fa-computer' },
+      { label: 'Manage Labs', id: "manage-labs", path: './front-page.html', roles: ['technician'], icon: 'fa-solid fa-desktop'},
       { label: 'Profile', id: "profile", path: './profile.html', roles: ['student'], icon: 'fa-solid fa-circle-user' },
       { label: 'Search User', id: "search-user", path: './search-user.html', roles: ['student', 'technician'], icon: 'fa-solid fa-magnifying-glass' },
-      { label: 'Logout', id: "logout",  path: './profile.html', roles: ['student', 'technician'], icon: 'fa fa-sign-out' }
+      { label: 'Logout', id: "logout",  path: './front-page.html', roles: ['student', 'technician'], icon: 'fa fa-sign-out' },
+      { label: 'Exit', id: "exit",  path: './index.html', roles: ['guest'], icon: 'fa fa-sign-out' }
     ];
   }
 
