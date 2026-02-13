@@ -10,22 +10,10 @@
 <body>
   <div class="grid-container">
 
-    <nav class="sidebar">
-      <div class="logo">
-        <img id="title-logo" src="imgs/logo.png" alt="">
-      </div>
-
-      <div class="nav-container" id="nav-container">
-        <script src="./components/navbar.js"></script>
-        <script src="./util/access-control.js"></script>
-      </div>  
-    </nav>
+    <app-header title="My Reservations"></app-header>
+    <app-navbar role="guest"></app-navbar>
 
     <div class="content">
-      <div class="title-section">
-        <h1 id="title-page">My Profile</h1>
-      </div>
-
       <div class="reservations-container" id="reservations-container" data-role="student">
         <h1>Current Reservations</h1>
 
@@ -83,6 +71,8 @@
 
   </div>
 
+  <script src="./components/NavBar.js"></script>
+  <script src="./components/Header.js"></script>
   <script src="./components/myProfileCard.js"></script>
   <script src="db.js"></script>
   <script src="profile.js"></script>

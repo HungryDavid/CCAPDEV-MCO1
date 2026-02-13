@@ -4,83 +4,35 @@
   box-sizing: border-box;
 }
 
-
 .grid-container{
   display: grid;
   grid-template-areas: 
-  "sidebar title-section";
+  "sidebar header"
+  "sidebar content";
+  min-height: 100vh;
+  grid-template-rows: max-content 1fr;
   grid-template-columns: 60px 1fr;
-  min-height: 100vh; 
   transition: grid-template-columns 0.3s ease;
 }
 
+app-header{
+  grid-area: header;
+  
+}
 
-.sidebar {
-  padding-top: 1.5rem;
-  display: flex;
+app-navbar{
   grid-area: sidebar;
-  flex-direction: column;
-  align-items: center;
-  gap: 1.2rem;
-  background-color: whitesmoke;
-}
-
-.nav-container{
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-#title-logo{
-  width: 80%;
-}
-
-.logo{
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .content{
-  grid-area: title-section;
-}
-
-.nav-text{
-  font-family: "Inter", "Roboto", sans-serif;
-  display: none;
-  font-weight: bold;
-}
-
-i{
-  font-size: 1.7rem;
-  color: darkslategray;
-}
-
-.grid-container div.content div.title-section{
-  display: flex;
-  align-items: center;
-  background-image: url(imgs/HS.jpg);
-  background-repeat: no-repeat;
-  background-size: cover;
-  background-position: center;
-  background-blend-mode: soft-light;
-  background-color: #006937;
-  min-height:20vh;
-  grid-area: title-section;
-}
-
-#title-page{
-  font-size: clamp(1.5rem, 5vw + 0.7rem, 3rem);
-  font-family: "Montserrat", "Poppins", sans-serif;
-  color: white;
-  margin-left: 4rem;
+  grid-area: content;
 }
 
 #search-bar{
   font-size: 15px;
   margin-left: auto;
   margin-right: auto;
-  margin: 5rem auto;
+  margin: 3rem auto;
   height: 50px;
   font-family: "Open Sans", "Roboto", sans-serif;
   border-radius: 50px;
@@ -95,15 +47,6 @@ i{
   align-items: center;
 }
 
-
-a{
-  width: 100%;
-  padding: 0.7rem;
-}
-
-a:hover{
-  background-color: gainsboro;
-}
 
 .reservations-container{
   min-width: 100%;
@@ -140,32 +83,4 @@ th, td {
     grid-template-columns: 240px 1fr;
   }
 
-  #title-logo{
-    padding-top: 2rem;
-    max-height: 200px;
-  }
-
-
-  .nav-container{
-    align-items: flex-start;
-  }
-
-  i{
-    text-align: center;
-    font-size: 2rem;
-    min-width: 55px;
-  }
-
-  a{
-    text-decoration: none;
-  }
-
-  .nav-text{
-    text-decoration: none;
-    color: black;
-    display: inline;
-    margin: 5px;
-  }
-
-  
 }

@@ -10,21 +10,10 @@
 <body>
   <div class="grid-container">
 
-    <nav class="sidebar">
-      <div class="logo">
-        <img id="title-logo" src="imgs/logo.png" alt="">
-      </div>
-
-      <div class="nav-container" id="nav-container">
-        
-      </div>  
-    </nav>
+    <app-header title="Search User"></app-header>
+    <app-navbar role="guest"></app-navbar>
 
     <div class="content">
-      <div class="title-section">
-        <h1 id="title-page">Search User</h1>
-      </div>
-
       <div class="search">
         <input type="text" id="search-bar" placeholder="Search ID Number" value="12345678">
       </div>
@@ -32,12 +21,13 @@
       <div id="profile-container">
         
       </div>
+    </div>
 
 
   </div>
 
-  <script src="./components/navbar.js"></script>
-  <script src="./util/access-control.js"></script>
+  <script src="./components/NavBar.js"></script>
+  <script src="./components/Header.js"></script>
   <script src="search-user.js"></script>
   <script src="./components/searchProfileCard.js"></script>
   <script src="db.js"></script>

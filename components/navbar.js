@@ -1,68 +1,164 @@
-const renderNavbar = () => {
-    const navHTML = `
-        <a href="#" class="nav-item" id="home" data-role="technician,student,guest">
-          <i class="fa-solid fa-house"></i><span class="nav-text">Home</span>
-        </a>
-    
-        <a href="#" class="nav-item" id="reservations" data-role="student">
-          <i class="fa-solid fa-calendar-check"></i><span class="nav-text">My Reservations</span>
-        </a>
-   
-      
-        <a href="#" class="nav-item" id="manage-labs" data-role="technician">
-          <i class="fa-solid fa-computer"></i><span class="nav-text">Manage Labs</span>
-        </a>
+class NavBar extends HTMLElement {
+  constructor() {
+    super();
+    this.attachShadow({ mode: 'open' });
 
-        <a href="#" class="nav-item" id="profile" data-role="technician,student">
-          <i class="fa-solid fa-circle-user"></i><span class="nav-text">Profile</span>
-        </a>
+    this.routes = [
+      { label: 'Home', id: "home", path: './front-page.html', roles: ['guest', 'student', 'technician'], icon: 'fa-solid fa-house' },
+      { label: 'Reservations', id: "reservations", path: './edit-reservations.html', roles: ['student'], icon: 'fa-solid fa-calendar' },
+      { label: 'Manage Labs', id: "manage-labs", path: './front-page.html', roles: ['technician'], icon: 'fa-solid fa-computer' },
+      { label: 'Profile', id: "profile", path: './profile.html', roles: ['student'], icon: 'fa-solid fa-circle-user' },
+      { label: 'Search User', id: "search-user", path: './search-user.html', roles: ['student', 'technician'], icon: 'fa-solid fa-magnifying-glass' },
+      { label: 'Logout', id: "logout",  path: './profile.html', roles: ['student', 'technician'], icon: 'fa fa-sign-out' }
+    ];
+  }
 
-        <a href="#" class="nav-item" id="search-users" data-role="technician,student">
-          <i class="fa-solid fa-magnifying-glass"></i><span class="nav-text">Search Users</span>
-        </a>
+  static get observedAttributes() {
+    return ['role'];
+  }
 
-        <a href="#" class="nav-item" id="logout" data-role="technician,student">
-          <i class="fa fa-sign-out"></i><span class="nav-text">Logout</span>
+  attributeChangedCallback() {
+    this.render();
+  }
+
+  connectedCallback() {
+    this.render();
+  }
+
+  render() {
+
+    const userRole = sessionStorage.getItem('userType') || 'guest';
+
+    const links = this.routes
+    .filter(route => route.roles.includes(userRole))
+    .map(route => `
+      <li>
+        <a href="${route.path}" id="nav-${route.id}">
+          <i class="${route.icon}"></i><span class="link-text">${route.label}</span>
         </a>
+      </li>`)
+    .join('');
+
+    this.shadowRoot.innerHTML = `
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+      <style>
+
+        .sidebar {
+          height: 100%;
+          padding-top: 1.5rem;
+          display: flex;
+          grid-area: sidebar;
+          flex-direction: column;
+          align-items: center;
+          gap: 1.2rem;
+          background-color: whitesmoke;
+        }
+
+        #title-logo{
+          width: 80%;
+        }
+
+        .logo{
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .links-container{
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
+
+        .content{
+          grid-area: title-section;
+        }
+
+        .link-text{
+          font-family: "Inter", "Roboto", sans-serif;
+          display: none;
+          font-weight: bold;
+          font-size: 1.2rem;
+        }
+
+        i{
+          font-size: 1.7rem;
+          color: darkslategray;
+        }
+
+        li{
+          width: 100%;
+          padding: 0.6rem 0;
+          display: flex;
+          justify-content: center;
+        }
+        
+        ul{
+          list-style-type: none; 
+          margin: 0;           
+          padding: 0;
+        }
+
+        @media (min-width: 768px) {
+
+          #title-logo{
+            padding-top: 2rem;
+            max-height: 200px;
+          }
+
+          .links-container{
+            align-items: flex-start;
+          }
+
+          i{
+            text-align: center;
+            font-size: 2rem;
+            min-width: 55px;
+          }
+
+          li{
+            display: block;
+          }
+
+          a{
+            text-decoration: none;
+          }
+
+          .link-text{
+            text-decoration: none;
+            color: black;
+            display: inline;
+            margin: 5px;
+          }
+        }
+      </style>
+
+      <nav class="sidebar">
+        <div class="logo">
+          <img id="title-logo" src="imgs/logo.png" alt="">
+        </div>
+
+        <div class="links-container">
+          <ul>${links}</ul>
+        </div>
+      </nav>      
     `;
 
-    if (document.getElementById('nav-container'))
-      document.getElementById('nav-container').innerHTML = navHTML;
+    this.setupListeners();
+  }
 
-    if (document.getElementById('home'))
-      document.getElementById('home').addEventListener("click", function(){
-        window.location.href = './front-page.html'; 
-    });
 
-    if (document.getElementById('reservations'))
-      document.getElementById('reservations').addEventListener("click", function(){
-        window.location.href = './edit-reservations.html'; 
-    });
-
-    if (document.getElementById('manage-labs'))
-      document.getElementById('manage-labs').addEventListener("click", function(){
-        window.location.href = './front-page.html'; 
-    });
-
-    if (document.getElementById('profile'))
-      document.getElementById('profile').addEventListener("click", function(){
-        window.location.href = './profile.html'; 
-    });
-    
-    if (document.getElementById('search-users'))
-      document.getElementById('search-users').addEventListener("click", function(){
-        window.location.replace('./search-user.html'); 
-    });
-
-    if (document.getElementById('logout'))
-      document.getElementById('logout').addEventListener("click", function(){
-
+  setupListeners() {
+    const logoutLink = this.shadowRoot.getElementById('nav-logout');
+    if (logoutLink) {
+      logoutLink.addEventListener('click', (e) => {
+        e.preventDefault();
         sessionStorage.clear();
         localStorage.removeItem('currentUserId');
         window.location.href = "index.html";
+      });
+    }
+  }
 
-    });
-
-};
-
-renderNavbar();
+}
+customElements.define('app-navbar', NavBar);

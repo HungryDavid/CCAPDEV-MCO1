@@ -21,36 +21,26 @@
   -->
   <div class="grid-container">
 
-    <nav class="sidebar">
-      <div class="logo">
-        <img id="title-logo" src="imgs/logo.png" alt="">
+    <app-header title="Home"></app-header>
+    <app-navbar role="guest"></app-navbar>
+
+      <div class="content">
+        
+
+        <div class="search">
+          <input type="text" id="fp_input" placeholder="Search (ex. GK302)">
+        </div>
+
+        <div class="labs" id="labs-container"></div>
+        
       </div>
 
-      <div class="nav-container" id="nav-container">
-        <script src="./components/navbar.js"></script>
-        <script src="./util/access-control.js"></script>
-      </div>  
-    </nav>
-
-    <div class="content">
-      <div class="title-section">
-        <h1 id="title-page"></h1>
-      </div>
-
-      <div class="search">
-        <input type="text" id="fp_input" placeholder="Search (ex. GK302)">
-      </div>
-
-      <div class="labs" id="labs-container"></div>
-      
-    </div>
+    
 
   </div>
 
-  <script>
-    let title_page = document.getElementById("title-page");
-      title_page.innerHTML = "Dashboard";
-  </script>
+  <script src="./components/NavBar.js"></script>
+  <script src="./components/Header.js"></script>
   <script src="db.js"></script>
   <script src="fp.js"></script>
 </body>

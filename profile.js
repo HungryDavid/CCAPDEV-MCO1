@@ -9,6 +9,7 @@ function initProfile() {
     const container = document.getElementById('my-profile-container');
     if (container) {
         container.innerHTML = MyProfileCard(storedUser);
+        console.log("ok");
         attachLogic();
     }
 }
