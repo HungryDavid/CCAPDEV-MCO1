@@ -1,8 +1,8 @@
 {
   "name": "ccapdev-mco1-main",
   "version": "1.0.0",
-  "description": "This project is a web-based laboratory reservation for students, lab technicians and guest alike!",
-  "main": "auth.js",
+  "description": "",
+  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
