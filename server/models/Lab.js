@@ -4,10 +4,10 @@ const laboratorySchema = new mongoose.Schema({
   name: {
     type: String,
     required: [true, 'A lab must have a name'],
-    unique: true, 
+    unique: true,
     trim: true
   },
-  totalSeats: {
+  capacity: {
     type: Number,
     required: [true, 'A lab must have a total number of seats'],
     min: [1, 'Lab must have at least one seat']
@@ -15,6 +15,14 @@ const laboratorySchema = new mongoose.Schema({
   image: {
     type: String,
     default: 'lab-default.jpg'
+  },
+  openTime: {
+    type: String,  // Add open time for each lab
+    required: [true, 'A lab must have an open time']
+  },
+  closeTime: {
+    type: String,  // Add close time for each lab
+    required: [true, 'A lab must have a close time']
   }
 }, {
   timestamps: true,
@@ -29,37 +37,35 @@ laboratorySchema.virtual('reservations', {
   localField: '_id'
 });
 
-exports.createLab = async (labData) => {
-  return await Laboratory.create(labData);
+// Static Method: Create a new lab
+laboratorySchema.statics.createLab = async function(labData) {
+  return await this.create(labData); // Calls Mongoose's built-in `create()` method
 };
 
-// 2. READ ALL
-exports.getAllLabs = async (queryObj) => {
-  // Basic logic to remove pagination/sorting params from query
+// Static Method: Get all labs with filtering support
+laboratorySchema.statics.getAllLabs = function(queryObj) {
   const excludedFields = ['page', 'sort', 'limit', 'fields'];
   const filterData = { ...queryObj };
   excludedFields.forEach(el => delete filterData[el]);
-
-  return await Laboratory.find(filterData);
+  
+  return this.find(filterData).lean();  // Return all labs based on the filterData
 };
 
-// 3. READ ONE
-exports.getLabById = async (id) => {
-  return await Laboratory.findById(id);
+// Static Method: Get one lab by ID
+laboratorySchema.statics.getLabById = async function(id) {
+  return await this.findById(id);
 };
 
-// 4. UPDATE
-exports.updateLab = async (id, updateData) => {
-  return await Laboratory.findByIdAndUpdate(id, updateData, {
-    new: true,           // Return the updated document
-    runValidators: true  // Ensure schema rules (like min seats) are checked
+laboratorySchema.statics.updateLab = async function(id, updateData) {
+  return await this.findByIdAndUpdate(id, updateData, {
+    returnDocument: 'after',
+    runValidators: true
   });
 };
 
-// 5. DELETE
-exports.deleteLab = async (id) => {
-  return await Laboratory.findByIdAndDelete(id);
+// Static Method: Delete a lab by ID
+laboratorySchema.statics.deleteLab = async function(id) {
+  return await this.findByIdAndDelete(id);
 };
-
 
 module.exports = mongoose.model('Laboratory', laboratorySchema);

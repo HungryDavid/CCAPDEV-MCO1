@@ -96,8 +96,11 @@ app.use(async (req, res, next) => {
 app.use('/slots-availability', ensureAuthenticated, require('./routes/slots-routes'));
 app.use('/my-reservations', ensureAuthenticated, require('./routes/my-reservations-routes'));
 app.use('/search-user', ensureAuthenticated, require('./routes/search-user-routes'));
+app.use('/manage-labs', ensureAuthenticated, require('./routes/manage-labs-routes'));
 app.use('/my-profile', ensureAuthenticated, require('./routes/my-profile-routes'));
 app.use('/', require('./routes/auth-routes'));
+
+
 
 const PORT = process.env.PORT || 3000;
 
