@@ -1,0 +1,12 @@
+<main class="main">
+  <div class="error">
+    <div class="error__title">
+      <h2 class="heading-secondary">Uh oh! Something went wrong!</h2>
+    </div>
+    <div class="error__msg">{{msg}}</div>
+    
+    {{#if stack}}
+      <pre style="text-align: left; font-size: 10px; color: red;">{{stack}}</pre>
+    {{/if}}
+  </div>
+</main>

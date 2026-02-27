@@ -1,0 +1,36 @@
+<style>
+  /* Custom CSS for the unique background effects not in Bootstrap */
+  .custom-header {
+    background-image: url("/imgs/HS.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    background-blend-mode: soft-light;
+    background-color: #006937;
+    will-change: transform;
+    
+    /* Mobile min-height */
+    height: 12vh; 
+  }
+
+  /* Responsive height adjustment */
+  @media (min-width: 768px) {
+    .custom-header {
+      height: 25vh;
+    }
+  }
+
+  .header-title {
+    font-size: clamp(1.5rem, 5vw + 0.7rem, 3rem);
+  }
+</style>
+
+<header class="custom-header d-flex align-items-center col-10 offset-2">
+  <h1 class="header-title text-white ms-4 ms-md-5 mb-0">
+    {{#if headerTitle}}
+      {{headerTitle}}
+    {{else}}
+      Default Title
+    {{/if}}
+  </h1>
+</header>

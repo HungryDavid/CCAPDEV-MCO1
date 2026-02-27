@@ -1,0 +1,24 @@
+<h2>User Management</h2>
+
+<table class="table table-striped mt-3">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Role</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {{#each userList}}
+        <tr>
+            <td>{{this.id}}</td>
+            <td>{{this.name}}</td>
+            <td><span class="badge bg-secondary">{{this.role}}</span></td>
+            <td>
+                <button class="btn btn-sm btn-info">Edit</button>
+            </td>
+        </tr>
+        {{/each}}
+    </tbody>
+</table>

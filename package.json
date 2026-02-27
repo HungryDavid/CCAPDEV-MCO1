@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "sass:watch": "sass --watch public/scss/styles.scss public/css/styles.css"
   },
   "repository": {
     "type": "git",
@@ -17,5 +17,26 @@
   "bugs": {
     "url": "https://github.com/HungryDavid/CCAPDEV-MCO1/issues"
   },
-  "homepage": "https://github.com/HungryDavid/CCAPDEV-MCO1#readme"
+  "homepage": "https://github.com/HungryDavid/CCAPDEV-MCO1#readme",
+  "dependencies": {
+    "@popperjs/core": "^2.11.8",
+    "bcrypt": "^6.0.0",
+    "bcryptjs": "^3.0.3",
+    "bootstrap": "^5.3.8",
+    "connect-flash": "^0.1.1",
+    "connect-mongo": "^6.0.0",
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1",
+    "express-handlebars": "^8.0.6",
+    "express-session": "^1.19.0",
+    "hbs": "^4.2.0",
+    "helmet": "^8.1.0",
+    "moment": "^2.30.1",
+    "mongoose": "^9.2.1",
+    "multer": "^2.0.2",
+    "validator": "^13.15.26"
+  },
+  "devDependencies": {
+    "sass": "^1.97.3"
+  }
 }

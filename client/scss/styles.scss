@@ -1,0 +1,17 @@
+// 1. Required functions for calculations
+@import "../../node_modules/bootstrap/scss/functions";
+
+// 2. DEFINE OVERRIDES HERE (Before variables.scss)
+$primary: #00703C; 
+
+// 3. Now import variables (It will respect your $primary override)
+@import "../../node_modules/bootstrap/scss/variables";
+
+// 4. Custom map merging (This must happen AFTER variables so $theme-colors exists)
+$custom-colors: (
+  "bright-green": rgb(0, 255, 137)
+);
+$theme-colors: map-merge($theme-colors, $custom-colors);
+
+// 5. Finally, import the rest of Bootstrap
+@import "../../node_modules/bootstrap/scss/bootstrap";

@@ -1,0 +1,47 @@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
+
+<div class="container-fluid py-4 px-3 px-md-4">
+
+    <!-- Search Bar -->
+    <div class="row justify-content-center mb-4">
+        <div class="col-12 col-sm-10 col-md-8 col-lg-6">
+            <form action="/search-user/search" method="GET" id="search-form"
+                class="d-flex flex-column flex-sm-row gap-2">
+                <div class="input-group shadow-sm">
+                    <span class="input-group-text bg-white border-end-0 border-success">
+                        <i class="bi bi-search text-success"></i>
+                    </span>
+                    <input type="search" id="search-input" name="q" value="{{searchQuery}}"
+                        class="form-control border-start-0 border-success ps-0" placeholder="Search for a user..."
+                        aria-label="Search for a user" autocomplete="off" required />
+                    <button type="submit" class="btn btn-success px-4 fw-semibold">
+                        Search
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ProfileCard -->
+    {{#if account}}
+        {{> profile-card .}}
+    {{else if searchQuery}}
+    <!-- No user found message -->
+    <div class="row justify-content-center">
+        <div class="col-12 col-sm-10 col-md-8 col-lg-6">
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-body text-center py-5">
+                    <i class="bi bi-person-x text-muted" style="font-size: 3.5rem;"></i>
+                    <h2 class="fs-5 fw-semibold mt-3 mb-1">No user found</h2>
+                    <p class="text-muted small mb-0">
+                        We couldn't find anyone matching
+                        <span class="fw-semibold text-dark">"{{searchQuery}}"</span>.
+                        Try a different name or username.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{/if}}
+
+</div>

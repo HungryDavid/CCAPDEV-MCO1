@@ -1,0 +1,11 @@
+const express = require('express');
+const router = express.Router();
+const controller = require('../controllers/search-user-controller');
+const Usercontroller = require('../controllers/my-profile-controller');
+const { authorize } = require('../middleware/auth-middleware');
+
+// Chain them: Route -> Middleware -> Controller
+router.get('/search', authorize('student','technician'),Usercontroller.searchUser);
+router.get('/', authorize('student','technician'),controller.getPage);
+
+module.exports = router;

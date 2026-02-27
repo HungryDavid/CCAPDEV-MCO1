@@ -1,0 +1,154 @@
+<div class="container-fluid py-4 px-3 px-md-4">
+
+  <div id="my-profile-container" class="row justify-content-center mb-4">
+    <div class="col-12 col-sm-10 col-md-8 col-lg-6">
+      <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-body px-4 py-4">
+
+          <form action="/my-profile/edit" method="POST" id="edit-profile-form" enctype="multipart/form-data">
+            <div class="d-flex justify-content-center pt-2 pb-2">
+              <img src="{{#if account.profilePic}}{{account.profilePic}}{{else}}/imgs/portraitPlaceholder.png{{/if}}"
+                alt="Profile picture of {{account.name}}"
+                class="rounded-circle object-fit-cover border border-3 border-success shadow-sm" width="140"
+                height="140" />
+            </div>
+
+
+            <div id="name-display-section">
+              <h1 class="text-center fw-bold fs-4 mb-0">
+                {{account.name}}
+              </h1>
+            </div>
+
+            <!-- BIO -->
+            <div class="d-flex justify-content-center mt-2 mb-3">
+              <textarea name="bio" id="bio-textarea"
+                class="form-control text-center border-0 bg-transparent shadow-none resize-none" rows="2" readonly
+                style="max-width: 80%; font-size: 1rem; resize: none;">{{#if account.bio}}{{account.bio}}{{else}}No bio yet.{{/if}}</textarea>
+            </div>
+
+            {{#if isOwner}}
+            <!-- BUTTONS -->
+            <div class="d-flex justify-content-center mb-2">
+
+              <!-- Edit Button -->
+              <button type="button" id="edit-btn"
+                class="btn btn-outline-success btn-sm px-4 d-flex justify-content-center gap-1"
+                style="min-width: 150px;">
+                <span>Edit Profile</span>
+              </button>
+
+              <!-- Save Button (Hidden) -->
+              <button type="submit" id="save-btn"
+                class="btn btn-success btn-sm px-4 d-none align-items-center gap-1">Save Changes
+              </button>
+
+              <div id="image-upload-section" class="d-none mx-3">
+                <label class="btn btn-sm btn-outline-secondary">
+                  Change Photo
+                  <input type="file" name="profilePic" class="d-none" onchange="previewImage(event)">
+                </label>
+              </div>
+            </div>
+          </form>
+
+          <hr class="my-3" />
+
+          <!--delete-->
+          <div class="d-flex justify-content-center">
+            <button type="button" class="btn btn-outline-danger btn-sm px-4 d-flex align-items-center gap-1"
+              data-bs-toggle="modal" data-bs-target="#deleteAccountModal" style="min-width: 150px; font-size: 0.85rem;">
+              Delete Account
+            </button>
+          </div>
+        </div>
+        {{/if}}
+      </div>
+    </div>
+  </div>
+
+
+  <!--Current Reservations-->
+  <div class="reservations-container row justify-content-center" id="reservations-container" data-role="student">
+    <div class="col-12 col-sm-11 col-md-10 col-lg-8">
+
+      <h2 class="text-center fw-semibold fs-5 pt-2 pb-3">
+        Current Reservations
+      </h2>
+
+      <div class="table-responsive rounded-3 shadow-sm">
+        <table class="table table-bordered table-hover align-middle mb-0">
+          <thead class="table-success">
+            <tr>
+              <th scope="col" class="fw-semibold">Laboratory</th>
+              <th scope="col" class="fw-semibold">Date</th>
+              <th scope="col" class="fw-semibold">Time</th>
+            </tr>
+          </thead>
+          <tbody>
+
+            {{#if reservations}}
+            {{#each reservations}}
+            <tr>
+              <td>{{this.laboratory}}</td>
+              <td>{{this.date}}</td>
+              <td>{{this.time}}</td>
+            </tr>
+            {{/each}}
+            {{else}}
+            {{! Fallback }}
+            <tr>
+              No Reservations Found
+            </tr>
+            {{/if}}
+
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+
+<!--Modal Delete-->
+
+<div class="modal fade" id="deleteAccountModal" tabindex="-1" aria-labelledby="deleteAccountModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 rounded-4 shadow">
+
+      <div class="modal-header border-0 pb-0">
+        <h5 class="modal-title fw-bold text-danger" id="deleteAccountModalLabel">
+          <i class="bi bi-exclamation-triangle-fill me-2"></i>
+          Delete Account
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <div class="modal-body pt-2">
+        <p class="text-body mb-2">
+          Are you sure you want to permanently delete your account?
+        </p>
+      </div>
+
+      <div class="modal-footer border-0 pt-0 flex-column flex-sm-row gap-2">
+        <button type="button" class="btn btn-secondary rounded-3 w-100" data-bs-dismiss="modal">
+          Cancel
+        </button>
+
+        <form action="/my-profile/delete" method="POST" class="w-100">
+          <button type="submit" id="confirmDeleteBtn" class="btn btn-danger rounded-3 w-100">
+            <i class="bi bi-trash3 me-1"></i>
+            Yes, Delete My Account
+          </button>
+        </form>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+<script src="/js/profile.js"></script>
