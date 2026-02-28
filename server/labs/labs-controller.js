@@ -238,7 +238,7 @@ exports.deleteLab = async (req, res) => {
             return res.status(404).send('Lab not found');
         }
 
-        res.redirect('/labs'); // Redirect to labs list after successful deletion
+        res.redirect('/manage-labs'); // Redirect to labs list after successful deletion
     } catch (error) {
         console.error(error);
         res.status(500).send('Error deleting lab');

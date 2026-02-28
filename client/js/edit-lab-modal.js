@@ -28,4 +28,15 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('editCloseTime').value = closeTime;
         document.getElementById('editCapacity').value = capacity;
     });
+
+    const deleteModal = document.getElementById('deleteLabModal');
+    const deleteForm = document.getElementById('deleteLabForm');
+
+    deleteModal.addEventListener('show.bs.modal', function (event) {
+        const button = event.relatedTarget;
+        const labId = button.getAttribute('data-id');
+        const id = button.getAttribute('data-id');
+
+        deleteForm.action = "/manage-labs/delete/" + id;
+    });
 });
