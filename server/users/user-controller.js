@@ -1,4 +1,4 @@
-const User = require('../models/User');
+const User = require('./User');
 
 exports.redirectToMyProfile = async (req, res) => {
     const userId = req.session.userId;
@@ -113,4 +113,3 @@ exports.searchUser = async (req, res) => {
   }
 };
 
-//const profile = await User.findPublicProfile(req.params.identifier);

@@ -10,13 +10,17 @@
     <style>
         body {
             min-height: 100vh;
-            display: flex;
-            flex-direction: column;
+            display: block;
+            /* Remove flex and centering */
+            margin: 0;
+            /* Remove default body margin */
         }
 
         .wrapper {
-            display: flex;
-            flex: 1;
+            display: block;
+            /* Remove flex display */
+            width: 100%;
+            /* Ensure it spans the full width */
         }
 
         .sidebar {

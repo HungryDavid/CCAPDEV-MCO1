@@ -1,0 +1,153 @@
+<div class="container py-4">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <span></span> <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#createLabModal">
+            + Create Lab
+        </button>
+    </div>
+
+    <!-- Labs Table -->
+    <div class="table-responsive shadow-sm rounded-3">
+        <table class="table table-bordered table-hover align-middle mb-0">
+
+            <thead class="table-success text-center">
+                <tr>
+                    <th>Lab Name</th>
+                    <th>Open Time</th>
+                    <th>Close Time</th>
+                    <th>Capacity</th>
+                    <th style="width: 150px;">Actions</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {{#if labs}}
+                {{#each labs}}
+                <tr class="text-center">
+                    <td>{{name}}</td>
+                    <td>{{openTime}}</td>
+                    <td>{{closeTime}}</td>
+                    <td>{{capacity}}</td>
+                    <td>
+                        <div class="d-flex justify-content-center gap-2">
+                            <!-- Edit Button -->
+                            <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal"
+                                data-bs-target="#editLabModal" data-id="{{_id}}">
+                                Edit
+                            </button>
+
+                            <!-- Delete -->
+                            <form action="/manage-labs/delete/{{_id}}" method="POST">
+                                <button class="btn btn-sm btn-outline-danger">
+                                    Delete
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                {{/each}}
+                {{else}}
+                <tr>
+                    <td colspan="5" class="text-center py-4">
+                        No laboratories found.
+                    </td>
+                </tr>
+                {{/if}}
+            </tbody>
+
+        </table>
+    </div>
+
+</div>
+
+<div class="modal fade" id="createLabModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <form action="/manage-labs/create" method="POST">
+
+                <div class="modal-header">
+                    <h5 class="modal-title">Create Lab</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+
+                    <div class="mb-3">
+                        <label class="form-label">Lab Name</label>
+                        <input type="text" name="name" class="form-control" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Open Time</label>
+                        <input type="time" name="openTime" class="form-control" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Close Time</label>
+                        <input type="time" name="closeTime" class="form-control" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Capacity</label>
+                        <input type="number" name="capacity" class="form-control" required>
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-success">Create</button>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="editLabModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <form method="POST" id="editLabForm">
+
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Lab</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+
+                    <div class="mb-3">
+                        <label class="form-label">Lab Name</label>
+                        <input type="text" name="name" id="editName" class="form-control" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Open Time</label>
+                        <input type="time" name="openTime" id="editOpenTime" class="form-control" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Close Time</label>
+                        <input type="time" name="closeTime" id="editCloseTime" class="form-control" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Capacity</label>
+                        <input type="number" name="capacity" id="editCapacity" class="form-control" required>
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-success">Save Changes</button>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<script src="js/edit-lab-modal.js"></script>

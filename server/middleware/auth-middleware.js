@@ -20,7 +20,7 @@ exports.ensureGuest = (req, res, next) => {
         return next();
     }
     console.log("Auth-middleware ensureGuest: Not a guest");
-    return res.redirect("/login");
+    //return res.redirect("/login");
 //    return res.redirect('/slots-availability'); // or dashboard
 };
 

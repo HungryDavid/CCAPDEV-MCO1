@@ -69,3 +69,6 @@ laboratorySchema.statics.deleteLab = async function(id) {
 };
 
 module.exports = mongoose.model('Laboratory', laboratorySchema);
+
+
+

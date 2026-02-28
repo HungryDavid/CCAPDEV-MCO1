@@ -1,0 +1,89 @@
+<form class="mx-auto mb-4" style="width: min(95%, 1000px)" id="bookingForm" action="/slots-availability" method="GET">
+  <div class="card shadow-sm border-0 rounded-4 p-4">
+
+    <div class="row g-4 align-items-end">
+
+      <!-- Date Section -->
+      <div class="col-12 col-md">
+        <label for="bookingDate" class="form-label">Select Date:</label>
+        <select id="bookingDate" name="bookingDate" class="form-select" required>
+          {{#each availableDates}}
+          <option value="{{this}}" {{#if (eq this ../selectedDate)}}selected{{/if}}>
+            {{this}}
+          </option>
+          {{/each}}
+        </select>
+      </div>
+
+      <!-- Time Slot Section -->
+      <div class="col-12 col-md">
+        <label for="bookingTime" class="form-label">Time Slot:</label>
+        <select id="bookingTime" name="bookingTime" class="form-select">
+          <option value="">All Timeslots</option>
+          {{#each timeSlots}}
+          <option value="{{this}}" {{#if (eq this ../selectedTime)}}selected{{/if}}>
+            {{this}}
+          </option>
+          {{/each}}
+        </select>
+      </div>
+
+
+      <!-- Lab Name -->
+      <div class="col-12 col-md">
+        <label for="labName" class="form-label">Lab Name:</label>
+        <select id="labName" name="labName" class="form-select">
+          <option value="" {{#unless selectedLabId}}selected{{/unless}}>All Labs</option>
+          {{#each labs}}
+          <option value="{{_id}}" {{#if (eq _id ../selectedLabId)}}selected{{/if}}>
+            {{name}}
+          </option>
+          {{/each}}
+        </select>
+      </div>
+
+    </div>
+
+    {{!-- <!-- Search Button -->
+    <div class="row mt-4">
+      <div class="col text-center">
+        <button type="submit" class="btn btn-primary btn-lg rounded-4 px-5">
+          <i class="fa fa-search me-2"></i> Search
+        </button>
+      </div>
+    </div> --}}
+
+  </div>
+</form>
+
+<!-- Grid of Labs -->
+<div style="width: 95%" class="mx-auto mb-4 row g-3" id="labs-container">
+
+  {{#each labs}}
+  <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+    <div class="card h-100 shadow-sm">
+      
+      <div class="position-relative">
+        <!-- Your Original Image -->
+        <img src="{{image}}" class="card-img-top" alt="{{name}}"
+          style="height:150px; object-fit:cover; border-top-left-radius:.25rem; border-top-right-radius:.25rem;">
+
+        <!-- The Green Overlay Layer -->
+        <div class="position-absolute top-0 start-0 w-100 h-100 bg-success bg-opacity-50"
+          style="border-top-left-radius:.25rem; border-top-right-radius:.25rem; pointer-events: none;">
+        </div>
+      </div>
+
+      <div class="card-body text-center">
+        <h5 class="card-title">{{name}}</h5>
+        <p class="card-text">
+          Available Slots: {{availableSlotsCount}}
+        </p>
+      </div>
+    </div>
+  </div>
+  {{/each}}
+
+</div>
+
+<script src="/js/slots-availability.js"></script>

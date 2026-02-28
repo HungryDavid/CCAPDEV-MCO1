@@ -7,7 +7,7 @@ const path = require('path');
 const dotenv = require('dotenv')
 const flash = require('connect-flash');
 const { connectDB } = require('./config/db');
-const User = require('./models/User');
+const User = require('./users/User');
 const helmet = require('helmet');
 const {
   ensureAuthenticated,
@@ -84,7 +84,7 @@ app.use(async (req, res, next) => {
   if (req.session.userId) {
     const user = await User.findById(req.session.userId).lean();
     res.locals.user = {
-      username: user.username,
+      userId: user._id,
       email: user.email,
       role: user.role
     };
@@ -93,12 +93,12 @@ app.use(async (req, res, next) => {
 });
 
 //===========================ROUTES============================
-app.use('/slots-availability', ensureAuthenticated, require('./routes/slots-routes'));
-app.use('/my-reservations', ensureAuthenticated, require('./routes/my-reservations-routes'));
-app.use('/search-user', ensureAuthenticated, require('./routes/search-user-routes'));
-app.use('/manage-labs', ensureAuthenticated, require('./routes/manage-labs-routes'));
-app.use('/my-profile', ensureAuthenticated, require('./routes/my-profile-routes'));
-app.use('/', require('./routes/auth-routes'));
+app.use('/slots-availability', ensureAuthenticated, require('./labs/slots-routes'));
+//app.use('/my-reservations', ensureAuthenticated, require('./routes/my-reservations-routes'));
+app.use('/search-user', ensureAuthenticated, require('./users/search-user-routes'));
+app.use('/manage-labs', ensureAuthenticated, require('./labs/manage-labs-routes'));
+app.use('/my-profile', ensureAuthenticated, require('./users/user-routes'));
+app.use('/', require('./auth/auth-routes'));
 
 
 

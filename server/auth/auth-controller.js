@@ -1,5 +1,5 @@
 
-const User = require('../models/User');
+const User = require('../users/User');
 
 //GET LOGIN
 const getLoginPage = (req, res) => {
