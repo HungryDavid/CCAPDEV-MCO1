@@ -12,5 +12,5 @@ router.post('/create', controller.createLab);
 router.get('/edit/:id', controller.getLabById);
 router.post('/edit/:id', controller.updateLab);
 router.post('/delete/:id', controller.deleteLab);
-router.get('/', controller.getPage);
+router.get('/', controller.getManageLabsPage);
 module.exports = router;

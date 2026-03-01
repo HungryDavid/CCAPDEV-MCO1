@@ -11,7 +11,10 @@ module.exports = {
     // 2. EQUALITY CHECK
     // Usage: {{#if (eq user.role "technician")}} ... {{/if}}
     eq: function (a, b) {
+       // console.log( a === b);
+       console.log('Comparing a:', a, 'with b:', b);
         return a === b;
+        
     },
 
     // 3. NOT EQUAL
@@ -57,14 +60,6 @@ module.exports = {
         return parseInt(value) + parseInt(addition);
     },
 
-    // 7. PROFILE PIC FALLBACK
-    // Usage: <img src="{{checkProfilePic user.profilePic}}">
-    checkProfilePic: function (picUrl) {
-        if (!picUrl || picUrl.trim() === "") {
-            return '/images/default-profile.png';
-        }
-        return picUrl;
-    },
 
     // 8. TRUNCATE TEXT
     // Usage: {{truncate description 50}}

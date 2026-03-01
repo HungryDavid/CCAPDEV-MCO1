@@ -93,10 +93,11 @@ app.use(async (req, res, next) => {
 });
 
 //===========================ROUTES============================
-app.use('/slots-availability', ensureAuthenticated, require('./labs/slots-routes'));
+app.use('/slots-availability', ensureAuthenticated, require('./labs/labs-routes'));
 //app.use('/my-reservations', ensureAuthenticated, require('./routes/my-reservations-routes'));
 app.use('/search-user', ensureAuthenticated, require('./users/search-user-routes'));
 app.use('/manage-labs', ensureAuthenticated, require('./labs/manage-labs-routes'));
+// app.use('/reserve-lab', ensureAuthenticated, require('./labs/reservation-routes'));
 app.use('/my-profile', ensureAuthenticated, require('./users/user-routes'));
 app.use('/', require('./auth/auth-routes'));
 
