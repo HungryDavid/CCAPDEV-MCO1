@@ -154,7 +154,7 @@ exports.getSlotsAvailabilityPage = async (req, res) => {
       availableDates,
       selectedDate,
       timeSlots,
-      selectedTime: autoSelectedTime,
+      selectedTime,
       labs: labsWithAvailability,
       selectedLabId
     });
@@ -248,64 +248,75 @@ exports.deleteLab = async (req, res) => {
 exports.getLabDetails = async (req, res) => {
   try {
     const labId = req.params.id;
-    const selectedDate = req.query.date || getNextNDates(7)[0]; // Default to next 7 days
-    const selectedTime = req.query.time || '07:30'; // Default time
 
-    // Fetch lab details from the database
+    // Get selected date & time from query
+    const selectedDate =
+      req.query.date || new Date().toISOString().split("T")[0];
+
+    const selectedTime = req.query.time || "07:30";
+
+    // Fetch lab
     const lab = await Laboratory.findById(labId).lean();
-    if (!lab) return res.status(404).send('Lab not found');
+    if (!lab) return res.status(404).send("Lab not found");
 
-    // Generate available time slots for the lab
-    const allSlots = getTimeSlots(
-      selectedDate === new Date().toISOString().split('T')[0], // Skip past if today
-      30, // Interval minutes
+    // Generate slots for selected date
+    const isToday =
+      selectedDate === new Date().toISOString().split("T")[0];
+
+    const timeSlots = getTimeSlots(
+      isToday,
+      30,
       lab.openTime,
-      lab.closeTime
+      lab.closeTime,
+      selectedDate // ✅ IMPORTANT FIX
     );
 
-    const timeSlots = allSlots; // Available time slots for the day
-
-    // Get existing reservations for the selected date and time
+    // Get reservations for selected date
     const reservations = await Reservation.find({
       laboratory: lab._id,
-      date: selectedDate,
-      timeSlots: selectedTime
+      date: selectedDate
     }).lean();
 
-    // Flatten seat grid by combining seatNumber and time
+    // Build flattened seat grid
     const flattenedSeats = [];
+
     for (let seat = 1; seat <= lab.capacity; seat++) {
       timeSlots.forEach(time => {
-        const reserved = reservations.some(r => r.timeSlots.includes(time) && r.seatNumber === seat);
-        flattenedSeats.push({ seatNumber: seat, time, reserved });
+        const reserved = reservations.some(
+          r =>
+            r.seatNumber === seat &&
+            r.timeSlots.includes(time)
+        );
+
+        flattenedSeats.push({
+          seatNumber: seat,
+          time,
+          reserved
+        });
       });
     }
 
-    // Retrieve previously selected seats and times from the session
+    // Session selections
     const selectedSeats = req.session.selectedSeats || [];
     const selectedTimes = req.session.selectedTimes || [];
 
-    // Format the selected times as a comma-separated string
-    const formattedSelectedTimes = selectedTimes.join(', ');
+    const formattedSelectedTimes = selectedTimes.join(", ");
 
-    console.log("selected time" + selectedTime);
-    // Render the page with the updated seat grid and formatted times
-    res.render('lab-details', {
+    res.render("lab-details", {
       lab,
       selectedDate,
       selectedTime,
       timeSlots,
-      flattenedSeats, // Pass flattened seats to the template
+      flattenedSeats,
       selectedSeats,
       formattedSelectedTimes,
-      layout: 'dashboard',
-      activePage: 'slots-availability',
+      layout: "dashboard",
+      activePage: "slots-availability",
       headerTitle: lab.name
     });
-
   } catch (err) {
-    console.error('Error fetching lab details:', err);
-    res.redirect('/');
+    console.error("Error fetching lab details:", err);
+    res.redirect("/");
   }
 };
 
@@ -314,9 +325,9 @@ function getTimeSlots(skipPast = true, intervalMinutes = 30, start = "07:30", en
   const [startH, startM] = start.split(":").map(Number);
   const [endH, endM] = end.split(":").map(Number);
 
-  const now = 
+  const now = new Date();
   //new Date("2026-03-01T14:00:00"); 
-  new Date();
+  
 
   // Use selected date if provided
   const slotDate = dateStr ? new Date(dateStr) : new Date();
