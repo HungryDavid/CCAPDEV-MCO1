@@ -96,7 +96,7 @@ app.use(async (req, res, next) => {
 app.use('/slots-availability', ensureAuthenticated, require('./labs/labs-routes'));
 app.use('/search-user', ensureAuthenticated, require('./users/search-user-routes'));
 app.use('/manage-labs', ensureAuthenticated, require('./labs/manage-labs-routes'));
-app.use('/my-profile', ensureAuthenticated, require('./users/user-routes'));
+app.use('/my-profile', ensureAuthenticated, require('./users/my-profile-routes'));
 app.use('/', require('./auth/auth-routes')); // Public routes (authentication-related)
 
 // Define server port

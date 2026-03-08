@@ -80,19 +80,30 @@ userSchema.virtual('reservations', {
 // --- MIDDLEWARE (HOOKS) ---
 // Pre-save hook to hash the password before saving the user
 userSchema.pre('save', async function (next) {
-  if (!this.isModified('password')) return next(); // Skip if password is not modified
-  try {
-    const salt = await bcrypt.genSalt(10); // Generate salt for hashing
-    this.password = await bcrypt.hash(this.password, salt); // Hash password
-    next();
-  } catch (err) {
-    next(err); // Pass any errors to the next middleware
-  }
+  if (!this.isModified('password')) return next();
+  this.password = await bcrypt.hash(this.password, 12);
+  next();
 });
 
+userSchema.index({ email: 1, idNumber: 1 });
+
+
+//MODEL LEVEL
+userSchema.statics.doesUserExist = async function (email, idNumber) {
+  const user = await this.findOne({
+    $or: [{ email }, { idNumber }],
+  });
+  return user;
+};
+
+//DOC LEVEL
+userSchema.methods.isCorrectPassword = async function(candidatePassword) {
+  return await bcrypt.compare(candidatePassword, this.password);
+};
+
+
 // --- STATIC METHODS (Business Logic) ---
-// Register a new user
-userSchema.statics.registerUser = async function (userData) {
+userSchema.statics.createUser = async function (userData) {
   const { email, idNumber, password } = userData;
 
   if (!email || !idNumber || !password) {
@@ -100,19 +111,15 @@ userSchema.statics.registerUser = async function (userData) {
   }
 
   // Check if email or ID number already exists
-  const userExists = await this.findOne({
-    $or: [{ email }, { idNumber }]
-  });
+  const doesUserExist = await this.doesUserExist(email, idNumber);
 
-  if (userExists) {
-    const field = userExists.email === email ? 'Email' : 'ID Number';
+  if (doesUserExist) {
+    const field = doesUserExist.email === email ? 'Email' : 'ID Number';
     throw new Error(`${field} is already registered.`);
   }
 
-  // Set role based on the email (if technician in email, set role to 'technician')
   const role = email.toLowerCase().includes('technician') ? 'technician' : 'student';
 
-  // Extract and format the user's name from the email
   const name = email
     .split('@')[0]
     .split(/[._]/)
@@ -120,39 +127,39 @@ userSchema.statics.registerUser = async function (userData) {
     .map(word => word.charAt(0).toUpperCase() + word.slice(1))
     .join(' ');
 
-  return await this.create({
+
+  const newUser = await this.create({
     ...userData,
     name,
-    role
+    role,
   });
+
+  return newUser;
 };
 
-// Login a user with email and password
-userSchema.statics.loginUser = async function (email, password) {
-  if (!email || !password) {
-    throw new Error('Please provide both email and password');
+userSchema.statics.readUserByIdSafe = function (userId) {
+  if (!userId) {
+    throw new Error('User ID is required.');
   }
 
-  const user = await this.findOne({ email }).select('+password'); // Include password field
-  if (user) {
-    const auth = await bcrypt.compare(password, user.password); // Compare entered password with stored hash
-    if (auth) {
-      return user; // Return user if authentication is successful
-    }
-  }
-  throw new Error('Invalid Credentials');
+  return this.findById(userId).select('-password');
 };
 
-// Search users by email (case-insensitive)
-userSchema.statics.searchUsers = async function (query) {
+userSchema.statics.readUserByEmailSafe = async function (query) {
   return await this.find({
     email: { $regex: query, $options: 'i' } // Search for email matching query
   }).select('-password'); // Exclude password from the results
 };
 
-// --- INSTANCE METHODS ---
-// Update user's profile (bio and profile picture)
-userSchema.methods.updateProfile = async function (data, filePath) {
+userSchema.statics.readUserByEmailWithPassword = async function (email) {
+  if (!email) {
+    throw new Error('Email is required.');
+  }
+
+  return await this.findOne(email).select('+password');
+};
+
+userSchema.methods.updateUser = async function (data, filePath) {
   if (data.bio) this.bio = data.bio; // Update bio if provided
   if (filePath) {
     this.profilePic = filePath; // Update profile picture if provided
@@ -160,26 +167,45 @@ userSchema.methods.updateProfile = async function (data, filePath) {
   return await this.save(); // Save the updated user data
 };
 
-// Delete a user by ID
+
 userSchema.statics.deleteUser = async function (userId) {
   if (!userId) {
     throw new Error('User ID is required.');
   }
 
-  const user = await this.findById(userId);
+  const user = await this.readUserById(userId);
+  
   if (!user) {
     throw new Error('User not found.');
   }
-
-  // Optionally delete related reservations (commented out in this example)
-  // await mongoose.model('Reservation').deleteMany({ student: userId });
 
   await user.deleteOne(); // Delete the user document
   return true;
 };
 
+
+// Login a user with email and password
+userSchema.statics.loginUser = async function(email, password) {
+  if (!email || !password) {
+    throw new Error('Please provide both email and password');
+  }
+
+  const user = await this.findOne({ email }).select('+password');
+  if (!user) {
+    throw new Error('Invalid credentials');
+  }
+
+  const isMatch = await user.isCorrectPassword(password);
+  if (!isMatch) {
+    throw new Error('Invalid credentials');
+  }
+
+  return user;
+};
+
+
 // Find a public profile by email or ID number
-userSchema.statics.findPublicProfile = async function (identifier) {
+userSchema.statics.readUserSafeAndPublic = async function (identifier) {
   if (!identifier) {
     throw new Error('ID number or email is required.');
   }
@@ -209,14 +235,9 @@ userSchema.statics.findPublicProfile = async function (identifier) {
     .select('-password');
 };
 
-// Find a user by their MongoDB ID
-userSchema.statics.findUserById = function (userId) {
-  if (!userId) {
-    throw new Error('User ID is required.');
-  }
 
-  return this.findById(userId).select('-password'); // Return user excluding password
-};
+
+
 
 const User = mongoose.model('User', userSchema);
 module.exports = User; // Export the User model

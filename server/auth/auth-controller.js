@@ -77,7 +77,7 @@ const logoutUser = (req, res) => {
 const registerUser = async (req, res, next) => {
     try {
         const { email, idNumber, password, rememberMe } = req.body;
-        await User.registerUser({ email, idNumber, password, rememberMe });
+        await User.createUser({ email, idNumber, password, rememberMe });
         res.redirect('/login');
     } catch (error) {
         req.flash('error', error.message);

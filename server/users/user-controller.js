@@ -1,27 +1,11 @@
 const User = require('./User');
 
-exports.redirectToMyProfile = async (req, res) => {
-    const userId = req.session.userId;
-    const user = await User.findById(userId).lean();
-    if (!user) {
-        return res.redirect('/login');
-    }
-
-    const userIdNumber = user.idNumber;
-    res.redirect(`/my-profile/${userIdNumber}`);
-};
-
-exports.getPage = async (req, res) => {
+exports.renderMyProfilePage = async (req, res) => {
     try {
-        const sessionUserId = req.session.userId;
-        const sessionUser = await User.findUserById(sessionUserId).lean();
+        const sessionUser = await User.readUserByIdSafe(req.session.userId).lean();
         if (!sessionUser) {
             return res.redirect('/login');
         }
-
-        const sessionUserIdNumber = sessionUser.idNumber;
-        const paramIdNumber = req.params.idNumber;
-
 
         res.render('partials/profile-card', {
             user: sessionUser,
@@ -30,8 +14,7 @@ exports.getPage = async (req, res) => {
             headerTitle: 'My Profile',
             layout: 'dashboard',
             activePage: 'my-profile',
-            isOwner: req.session.userId &&
-                sessionUserIdNumber === paramIdNumber
+            isOwner: true
         });
 
     } catch (error) {
@@ -40,12 +23,20 @@ exports.getPage = async (req, res) => {
     }
 };
 
+exports.renderSearchUserPage = (req, res) => {
+    res.render('search-profile', {  //render body
+        title: 'Search User', 
+        headerTitle: 'Search User',
+        layout: 'dashboard',
+        activePage: 'search-user',
+    });
+};
+
 exports.updateProfile = async (req, res) => {
     try {
         const user = await User.findById(req.session.userId);
-
         const filePath = req.file ? `/uploads/${req.file.filename}` : null;
-        await user.updateProfile(req.body, filePath);
+        await user.updateUser(req.body, filePath);
         res.redirect('/my-profile');
     } catch (error) {
         console.log(error);
@@ -63,13 +54,12 @@ exports.deleteProfile = async (req, res) => {
     }
 };
 
-
 exports.searchUser = async (req, res) => {
   try {
-    const sessionUserDoc = await User.findUserById(req.session.userId);
+    const sessionUserDoc = await User.readUserByIdSafe(req.session.userId);
     const sessionUser = sessionUserDoc ? sessionUserDoc.toObject() : null;
 
-    const query = req.query.q?.trim();
+    const query = req.query.q?.trim() || '';
 
     if (!query) {
       return res.render('search-profile', {
@@ -78,24 +68,23 @@ exports.searchUser = async (req, res) => {
         layout: 'dashboard',
         activePage: 'search-user',
         user: sessionUser,
-        account: null,
+        searchedUser: null,
         searchQuery: ''
       });
     }
 
-    let account = null;
+    let searchedUser = null;
     try {
-      const userDoc = await User.findPublicProfile(query);
-      console.log(userDoc);
-      account = userDoc ? userDoc.toObject() : null;
-      console.log(account);
+      const searchedUserDoc = await User.readUserSafeAndPublic(query);
+      searchedUser = searchedUserDoc?.toObject() || null;
     } catch (err) {
-      if (err.message === 'User not found.') {
-        account = null; // user not found → handled gracefully
-      } else {
-        console.error(err);
+      if (err.message !== 'User not found.') {
+        console.error('Error fetching user:', err);
       }
+      searchedUser = null; // gracefully handle not found
     }
+
+    console.log(searchedUser);
 
     res.render('search-profile', {
       title: 'Search User',
@@ -103,13 +92,12 @@ exports.searchUser = async (req, res) => {
       layout: 'dashboard',
       activePage: 'search-user',
       user: sessionUser,
-      account,
+      account: searchedUser ,
       searchQuery: query
     });
- console.log("rendered");
+
   } catch (error) {
-    console.error(error);
+    console.error('Search User Controller Error:', error);
     res.redirect('/');
   }
 };
-

@@ -11,8 +11,7 @@ const { authorize } = require('../middleware/auth-middleware');
 console.log("Profile Routes");
 
 authorize('student','technician');
-router.get('/:idNumber', controller.getPage);
 router.post('/edit', upload.single('profilePic'), controller.updateProfile)
 router.post('/delete', controller.deleteProfile)
-router.get('/', controller.redirectToMyProfile);
+router.get('/', controller.renderMyProfilePage);
 module.exports = router;
