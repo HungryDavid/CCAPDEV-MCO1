@@ -1,5 +1,5 @@
 
-const User = require('../users/User');
+const User = require('./User');
 
 //GET LOGIN
 const getLoginPage = (req, res) => {
@@ -36,10 +36,10 @@ const loginUser = async (req, res) => {
         } else {
             req.session.cookie.expires = false; // Session cookie (clears on browser close)
         }
-        res.redirect('/slots-availability');
+        res.redirect('/labs/slots-availability');
     } catch (error) {
         req.flash('error', error.message);
-        return res.redirect('/login');
+        return res.redirect('/auth/login');
     }
 };
 
@@ -47,7 +47,7 @@ const loginUser = async (req, res) => {
 const logoutUser = (req, res) => {
 
     if (!req.session) {
-        return res.redirect("/login");
+        return res.redirect("/auth/login");
     }
 
     // 1. Clear server-side session
@@ -68,7 +68,7 @@ const logoutUser = (req, res) => {
         res.setHeader('Pragma', 'no-cache');
         res.setHeader('Expires', '0');
 
-        return res.redirect("/login");
+        return res.redirect("/auth/login");
     });
 };
 
@@ -77,11 +77,11 @@ const registerUser = async (req, res, next) => {
     try {
         const { email, idNumber, password, rememberMe } = req.body;
         await User.createUser({ email, idNumber, password, rememberMe });
-        res.redirect('/login');
+        res.redirect('/auth/login');
     } catch (error) {
         console.log(error);
         req.flash('error', error.message);
-        return res.redirect('/register');
+        return res.redirect('/auth/register');
     }
 };
 

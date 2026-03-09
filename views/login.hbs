@@ -1,4 +1,4 @@
-<form action="/login" method="POST">
+<form action="/auth/login" method="POST">
     <!-- ID Number Input -->
     <div class="mb-3">
         <label for="identifier" class="form-label text-white">Email or ID Number</label>
@@ -21,7 +21,7 @@
                 Remember me
             </label>
         </div>
-        <a href="/register" class="text-bright-green text-decoration-none small fw-semibold">
+        <a href="/auth/register" class="text-bright-green text-decoration-none small fw-semibold">
             Don't have an account?
         </a>
     </div>
@@ -31,7 +31,7 @@
         <button type="submit" class="btn btn-success rounded-pill py-2 mb-1 fw-semibold" id="login-btn">
             Log In
         </button>
-        <a href="/slots-availability" class="btn btn-success rounded-pill py-2 fw-semibold" id="guest-btn"
+        <a href="/labs/slots-availability" class="btn btn-success rounded-pill py-2 fw-semibold" id="guest-btn"
             role="button">
             Continue as Guest
         </a>

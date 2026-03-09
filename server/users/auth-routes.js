@@ -17,7 +17,7 @@ router.get('/register', authController.getRegisterPage);
 router.post('/register', authController.registerUser);
 
 router.get('/', (req, res) => {
-    res.redirect('/login');
+    res.redirect('/auth/login');
 });
 // ... register routes similarly
 module.exports = router;

@@ -93,12 +93,11 @@ app.use(async (req, res, next) => {
 });
 
 // Route definitions (Protected routes use authentication middleware)
-app.use('/reservations', ensureAuthenticated, require('./routes/reservations-routes'));
-app.use('/slots-availability', ensureAuthenticated, require('./labs/labs-routes'));
-app.use('/search-user', ensureAuthenticated, require('./users/search-user-routes'));
-app.use('/manage-labs', ensureAuthenticated, require('./labs/manage-labs-routes'));
-app.use('/my-profile', ensureAuthenticated, require('./users/my-profile-routes'));
-app.use('/', require('./auth/auth-routes')); // Public routes (authentication-related)
+
+app.use('/user', ensureAuthenticated, require('./users/user-routes'));
+app.use('/labs', ensureAuthenticated, require('./labs/labs-routes'));
+app.use('/auth', require('./users/auth-routes')); // Public routes (authentication-related)
+app.use('/', require('./users/auth-routes')); 
 
 // Define server port
 const PORT = process.env.PORT || 3000;

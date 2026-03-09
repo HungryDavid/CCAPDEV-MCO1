@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', function () {
         openTime = to24HourFormat(openTime);
         closeTime = to24HourFormat(closeTime);
 
-        document.getElementById('editLabForm').action = "/manage-labs/edit/" + id;
+        document.getElementById('editLabForm').action = "/labs/manage/"+id+"/edit";
         document.getElementById('editName').value = name;
         document.getElementById('editOpenTime').value = openTime;
         document.getElementById('editCloseTime').value = closeTime;
@@ -46,6 +46,6 @@ document.addEventListener('DOMContentLoaded', function () {
     deleteModal.addEventListener('show.bs.modal', function (event) {
         const button = event.relatedTarget;
         const id = button.getAttribute('data-id');
-        deleteForm.action = "/manage-labs/delete/" + id;
+        deleteForm.action = "/labs/manage/"+ id+"/delete";
     });
 });

@@ -4,7 +4,7 @@ exports.ensureAuthenticated = async (req, res, next) => {
     // 1. Check if the session exists and has a userId
     if (!req.session || !req.session.userId) {
         console.log("Auth-Middleware EnsureAuthenticated");
-        return res.redirect('/login');
+        return res.redirect('/auth/login');
     }; 
     next(); 
 }
@@ -20,7 +20,7 @@ exports.ensureGuest = (req, res, next) => {
         return next();
     }
     console.log("Auth-middleware ensureGuest: Not a guest");
-    return res.redirect("/login");
+    return res.redirect("/auth/login");
 //    return res.redirect('/slots-availability'); // or dashboard
 };
 
@@ -34,7 +34,7 @@ exports.ensureLabTech = (req, res, next) => {
     if (req.session.userId) {
         return res.status(403).render('error', { message: 'Access Denied: Lab Technicians Only' });
     }
-    res.redirect('/login');
+    res.redirect('/auth/login');
 };
 
 // 4. Role-Based Authorization: Student Only
@@ -45,7 +45,7 @@ exports.ensureStudent = (req, res, next) => {
     if (req.session.userId) {
         return res.status(403).render('error', { message: 'Access Denied: Students Only' });
     }
-    res.redirect('/login');
+    res.redirect('/auth/login');
 };
 
 exports.authorize = (...allowedRoles) => {
@@ -53,7 +53,7 @@ exports.authorize = (...allowedRoles) => {
     // 1. Check if user is logged in
     if (!req.session || !req.session.userId) {
         alert("false");
-      return res.status(401).redirect('/login'); 
+      return res.status(401).redirect('/auth/login'); 
     }
 
     // Use res.locals.user (set in your app.js middleware)

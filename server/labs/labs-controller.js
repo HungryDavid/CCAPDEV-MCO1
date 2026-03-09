@@ -84,7 +84,7 @@ exports.getManageLabsPage = async (req, res) => {
 //   }
 //};
 
-exports.getSlotsAvailabilityPage = async (req, res) => {
+exports.getLabSlotAvailabilityCount = async (req, res) => {
   try {
     const selectedDate = req.query.bookingDate || getNextNDates(7)[0];
     const selectedTime = req.query.bookingTime || null; // single slot or null
@@ -182,7 +182,7 @@ exports.createLab = async (req, res) => {
     };
 
     const newLab = await Laboratory.createLab(labData);
-    res.redirect('/manage-labs'); // Redirect to the list of labs after creating
+    res.redirect('/labs/manage'); // Redirect to the list of labs after creating
   } catch (error) {
     console.error(error);
     res.status(500).send('Error creating lab');
@@ -198,7 +198,7 @@ exports.getLabById = async (req, res) => {
     if (!lab) {
       return res.status(404).send('Lab not found');
     }
-    res.render('labs/edit-lab', { lab }); // Pass lab to edit form view
+    res.render('/labs/manage', { lab }); // Pass lab to edit form view
   } catch (error) {
     console.error(error);
     res.status(500).send('Error fetching lab for editing');
@@ -220,7 +220,7 @@ exports.updateLab = async (req, res) => {
     });
 
     // Redirect back to the labs page with updated lab list
-    res.redirect('/manage-labs');  // Adjust if needed to the correct route
+    res.redirect('/labs/manage');  // Adjust if needed to the correct route
 
   } catch (error) {
     console.error(error);
@@ -238,7 +238,7 @@ exports.deleteLab = async (req, res) => {
       return res.status(404).send('Lab not found');
     }
 
-    res.redirect('/manage-labs'); // Redirect to labs list after successful deletion
+    res.redirect('/labs/manage'); // Redirect to labs list after successful deletion
   } catch (error) {
     console.error(error);
     res.status(500).send('Error deleting lab');
