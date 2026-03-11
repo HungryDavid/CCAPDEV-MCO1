@@ -210,7 +210,6 @@ laboratorySchema.statics.getAvailableLabs = async function (bookingDate, booking
     };
   }).filter(lab => lab.freeSeats > 0); // only include labs with available seats
 
-  console.log(availableLabs);
   return availableLabs;
 };
 
@@ -285,11 +284,6 @@ laboratorySchema.statics.getLabSeats = async function(labName, timeSlot, date) {
         });
       }
     }
-
-    console.log(labName);
-    console.log(date);
-    console.log(timeSlot);
-    console.log(seatStatus);
     return seatStatus;
 
   } catch (err) {

@@ -42,8 +42,6 @@ const reservationSchema = new mongoose.Schema({
 
 reservationSchema.statics.checkSlotStatus = async function(selectedLab, selectedDate, labCart) {
   const currentTime = moment.utc(); // current date and time in UTC
-  console.log("Current Time (UTC): ", currentTime.format()); // Debugging: Log current time
-
   const currentDate = moment.utc().format('YYYY-MM-DD'); // current date in UTC
 
   // Get all reservations for the selected lab and date
@@ -52,15 +50,12 @@ reservationSchema.statics.checkSlotStatus = async function(selectedLab, selected
     date: selectedDate
   });
 
-  console.log("Reservations: ", reservations); // Debugging: Log fetched reservations
-
   const slotStatus = {};
 
   // Check each time slot in labCart
   for (const [time, seatData] of Object.entries(labCart)) {
     // Convert labCart time to UTC and create moment object
     const slotMoment = moment.utc(`${selectedDate} ${time}`, 'YYYY-MM-DD HH:mm');
-    console.log(`Checking slot for time: ${time}, slotMoment (UTC): ${slotMoment.format()}`); // Debugging: Log slot moment
 
     // Initialize the slot status for this time
     slotStatus[time] = {
@@ -71,18 +66,14 @@ reservationSchema.statics.checkSlotStatus = async function(selectedLab, selected
     // Check if the slot has passed
     if (slotMoment.isBefore(currentTime)) {
       slotStatus[time].status = 'expired';
-      console.log(`Slot ${time} is expired.`); // Debugging: Log expired status
     } else {
       // Check if the slot is reserved by matching both time and seat number
       const isReserved = reservations.some(reservation => {
-        console.log("Raw reservation timeSlots: ", reservation.timeSlots);  // Log raw timeSlots data
 
         // Map through the reservation.timeSlots array, normalize each time to UTC, and format it
         const reservationTimes = reservation.timeSlots.map(slot =>
           moment.utc(slot, 'HH:mm').format('HH:mm')  // Convert each time slot to UTC and format as HH:mm
         );
-
-        console.log("Normalized reservation times: ", reservationTimes); // Log normalized reservation times
 
         // Check if the time matches
         const isTimeMatch = reservationTimes.includes(time);
@@ -90,12 +81,8 @@ reservationSchema.statics.checkSlotStatus = async function(selectedLab, selected
         // Check if the seat number also matches
         const isSeatMatch = reservation.seatNumbers.includes(seatData.seatNumber);
 
-        console.log(`Checking time and seat match for time ${time} and seat number ${seatData.seatNumber}`);
-        console.log(`Time match: ${isTimeMatch}, Seat match: ${isSeatMatch}`);
-
         // Both time and seat number must match
         if (isTimeMatch && isSeatMatch) {
-          console.log(`Match found! Reservation:`, reservation);  // Log the full reservation that matches
           return true; // This slot is reserved
         }
 
@@ -104,15 +91,12 @@ reservationSchema.statics.checkSlotStatus = async function(selectedLab, selected
 
       if (isReserved) {
         slotStatus[time].status = 'reserved';
-        console.log(`Slot ${time} with seat ${seatData.seatNumber} is reserved.`); // Debugging: Log reserved status
       } else {
         slotStatus[time].status = 'available';
-        console.log(`Slot ${time} with seat ${seatData.seatNumber} is available.`); // Debugging: Log available status
       }
     }
   }
 
-  console.log("Final Slot Status: ", slotStatus); // Debugging: Log final slot status
   return slotStatus;
 };
 
@@ -153,6 +137,12 @@ reservationSchema.statics.checkSeatAvailabilityConflict = async function (labora
 reservationSchema.statics.createReservation = async function ({ studentId, anonymous, laboratory, date, timeSlots, seatNumbers }) {
   // Validate input data directly within the model
   try {
+
+    console.log('laboratory:', laboratory);
+    console.log('date:', date);
+    console.log('timeSlots:', timeSlots);
+    console.log('seatNumbers:', seatNumbers);
+
     if (!laboratory || !date || !timeSlots || !seatNumbers || timeSlots.length === 0 || seatNumbers.length === 0) {
       throw new CustomError(400, 'BadRequest', "Invalid request, missing labId, date, time slots, or seat numbers.");
     }
@@ -163,6 +153,7 @@ reservationSchema.statics.createReservation = async function ({ studentId, anony
     // If no conflicts, proceed with creating the reservation
     return this.create({ studentId, anonymous, laboratory, date, timeSlots, seatNumbers });
   } catch (err) {
+    console.log(err);
     if (err instanceof CustomError) {
       throw err; // Re-throw the custom error to be handled at the API level or UI
     } else {

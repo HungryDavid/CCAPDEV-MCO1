@@ -6,29 +6,23 @@ const { getTimeSlots, renderErrorPage } = require('../util/helpers');
 
 exports.createReservation = async (req, res) => {
   try {
-    const { labName, date, selections } = req.body; // selections = { time: [seatNumber] }
+    const {selectedLab, selectedDate, labCart } = req.body; // selections = { time: [seatNumber] }
     const studentId = req.session.userId;
     const anonymous = true;
 
     // Get labId from the name (assuming this logic stays the same)
-    const labId = await Laboratory.getIdByName(labName);
+    const labId = await Laboratory.getIdByName(selectedLab);
 
-    const timeSlots = [];
-    const seatNumbers = [];
+    const timeSlots = Object.keys(labCart);
+    const seatNumbers = Object.values(labCart).map(item => item.seatNumber);
 
-    // Build timeSlots and seatNumbers arrays
-    for (const [time, seats] of Object.entries(selections)) {
-      const seat = Number(seats[0]); // only one seat per time slot
-      timeSlots.push(time);
-      seatNumbers.push(seat);
-    }
 
     // Now that the controller only prepares data, let the model handle validation and creation
     await Reservation.createReservation({
       studentId,
       anonymous,
       laboratory: labId,
-      date,
+      date: selectedDate,
       timeSlots,
       seatNumbers,
     });
@@ -37,6 +31,7 @@ exports.createReservation = async (req, res) => {
       message: "Reservation confirmed successfully!",
     });
   } catch (err) {
+    console.log(err);
     const statusCode = err.errorNumber || 500;
 
     // Format: "Conflict: You have already reserved a seat for 01:00 in this lab. (409)"
