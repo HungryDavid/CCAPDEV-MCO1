@@ -1,6 +1,11 @@
 
 
 <div class="container mt-4">
+  {{#if reservation}}
+    <input type="hidden" id="reservationId" value="{{reservation._id}}">
+  {{/if}}
+
+  <h2>{{#if reservation}}Edit Reservation{{else}}New Reservation{{/if}}</h2>
   <p><strong>Date:</strong> {{selectedDate}}</p>
 
   <!-- TIME SELECT FORM -->
@@ -29,15 +34,21 @@
   <div class="row" id="seatGrid">
     {{#each labSeats}}
     <div class="col-md-2 col-3 mb-2">
-      <button class="btn seat-btn w-100 {{#if (eq this.status "
-        reserved")}}btn-outline-danger{{else}}btn-outline-primary{{/if}}" data-seat="{{this.seatNumber}}"
-        data-booking-time="{{../bookingTime}}" {{#if (eq this.status "reserved" )}}disabled{{/if}}
-        title="{{#if (eq this.status " reserved")}}{{this.user.name}}{{else}}Available{{/if}}">
+      <button
+        class="btn seat-btn w-100 {{#if (isSeatSelected reservationSeats ../selectedTime this.seatNumber)}}btn-success{{else if (eq this.status 'reserved')}}btn-outline-danger{{else}}btn-outline-primary{{/if}}"
+        data-seat="{{this.seatNumber}}"
+        data-booking-time="{{../bookingTime}}"
+        {{#unless (isSeatSelected reservationSeats ../selectedTime this.seatNumber)}}
+          {{#if (eq this.status 'reserved')}}disabled{{/if}}
+        {{/unless}}
+        title="{{#if (isSeatSelected reservationSeats ../selectedTime this.seatNumber)}}Selected{{else if (eq this.status 'reserved')}}{{this.user.name}}{{else}}Available{{/if}}">
 
-        {{#if (eq this.status "reserved")}}
-        {{this.user.name}}
+        {{#if (isSeatSelected reservationSeats ../selectedTime this.seatNumber)}}
+          {{this.seatNumber}}
+        {{else if (eq this.status 'reserved')}}
+          {{this.user.name}}
         {{else}}
-        {{this.seatNumber}}
+          {{this.seatNumber}}
         {{/if}}
       </button>
     </div>
@@ -72,14 +83,14 @@
     <!-- Confirm Reservation Button -->
     <div class="text-center mt-3">
       <button id="confirmReservationBtn" class="btn btn-success">
-        Confirm Reservation
+        {{#if reservation}}Update Reservation{{else}}Confirm Reservation{{/if}}
       </button>
     </div>
   </div>
 
   <!-- Load External JS -->
   <script>
-    window.initialCart = {{{json reservationSea}}};
+    window.initialCart = {{{json reservationSeats}}};
     console.log("Initial Cart from server:", window.initialCart);
   </script>
 
