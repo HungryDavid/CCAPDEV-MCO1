@@ -126,8 +126,14 @@ reservationSchema.statics.getUpcomingReservationsByUser = async function (userId
       date: { $gte: today }
     })
       .populate('laboratory', 'name')
-      .select('_id laboratory seatNumbers timeSlots date')
+      .select('_id laboratory seatNumbers timeSlots date createdAt')
       .sort({ date: 1 });
+
+    const formatDateTime = (date) => {
+      const d = new Date(date);
+      const pad = (n) => n.toString().padStart(2, '0');
+      return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+    };
 
     // Group by reservation _id
     const grouped = reservations.map(res => ({
@@ -135,7 +141,9 @@ reservationSchema.statics.getUpcomingReservationsByUser = async function (userId
       laboratory: res.laboratory?.name,
       date: res.date,
       seats: Array.isArray(res.seatNumbers) ? res.seatNumbers.join(', ') : res.seatNumbers,
-      time: Array.isArray(res.timeSlots) ? res.timeSlots.join(', ') : res.timeSlots
+      time: Array.isArray(res.timeSlots) ? res.timeSlots.join(', ') : res.timeSlots,
+      dateTimeCreated: formatDateTime(res.createdAt)
+      
     }));
 
     return grouped;
