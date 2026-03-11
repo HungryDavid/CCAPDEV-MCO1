@@ -166,7 +166,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function updateSeatButtons(seatStatus) {
     // Loop through each seat status returned from the server
-    console.log("updating seats");
     seatStatus.forEach(seat => {
       // Find the button for the seat based on seat number and booking time
       const seatButton = document.querySelector(`[data-seat="${seat.seatNumber}"][data-booking-time="${bookingTime}"]`);
@@ -181,8 +180,8 @@ document.addEventListener("DOMContentLoaded", function () {
           seatButton.classList.remove("btn-outline-primary");
           seatButton.classList.add("btn-outline-danger"); // Reserved status (red)
           seatButton.disabled = true; // Disable button if reserved
-          seatButton.title = `Reserved by ${seat.user.name || "Unknown"}`; // Show user info if available
-          seatButton.textContent = `Reserved by ${seat.user.name || "Unknown"}`;
+          seatButton.title = `${seat.user.name || "Unknown"}`; // Show user info if available
+          seatButton.textContent = `${seat.user.name || "Unknown"}`;
         } else if (seat.status === "available") {
           seatButton.classList.remove("btn-outline-danger");
           seatButton.classList.add("btn-outline-primary"); // Available status (blue)
@@ -231,7 +230,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
       // Parse the server's response
       const statusResponse = await response.json();
-      console.log(statusResponse);
       return statusResponse;  // Return the status data for further use
     } catch (error) {
       console.error("Error checking cart status:", error);
@@ -246,16 +244,10 @@ document.addEventListener("DOMContentLoaded", function () {
     for (const bookingTime in labCart) {
       if (labCart[bookingTime]) {  // Check if the booking time exists in labCart
         // If it matches, update the status
-        console.log(`Match found for ${bookingTime}, updating status...`);
-        console.log(bookingTime);
-        console.log(fetchedData[bookingTime]);
         labCart[bookingTime].status = fetchedData[bookingTime]?.status;  // Update status to "reserved"
-      } else {
-        console.log(`No match found for ${bookingTime} in sessionStorage.`);
-      }
+      } 
     }
 
-    console.log("Session data after update:", labCart);  // Debugging: Check updated labCart
 
     // 3. Save the updated labCart back to sessionStorage
     sessionStorage.setItem("labCart", JSON.stringify(labCart));
@@ -265,23 +257,20 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   confirmButton.addEventListener("click", async function () {
-    const selectedSeats = slotsInCart;
+    const labCart = JSON.parse(sessionStorage.getItem("labCart")) || {};
 
-    if (Object.keys(selectedSeats).length === 0) {
-      alert("Please select at least one seat.");
-      return;
+    // If the cart is empty, exit the function
+    if (Object.keys(labCart).length === 0) {
+      console.log("Cart is empty.");
+      return {};
     }
+
+      
 
     const confirmation = confirm("Are you sure you want to confirm the reservation?");
     if (!confirmation) return;
 
     try {
-      const labName = window.location.pathname.split("/")[3];
-      const bookingDate = bookingDateInput.value;
-      const selectedTime = bookingTime.value;
-
-
-
       // Call your API or backend to save the reservation data
       const response = await fetch(`/reservation/create`, {
         method: "POST",
@@ -289,10 +278,9 @@ document.addEventListener("DOMContentLoaded", function () {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          labName: labName,
-          selectedDate: bookingDate,
-          selectedTime: selectedTime,
-          selections: selectedSeats, // Send the entire cart data (time and seats)
+          selectedLab,
+          selectedDate: bookingDateInput.value,
+          labCart, // Send the entire cart data (time and seats)
         }),
       });
 
@@ -311,7 +299,7 @@ document.addEventListener("DOMContentLoaded", function () {
       sessionStorage.removeItem("labCart");
       renderSelectedSeats();
     } catch (err) {
-      alert("OTHER ERROR", err);
+      alert(err);
     }
   });
 
