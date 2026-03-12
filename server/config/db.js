@@ -1,19 +1,11 @@
 const mongoose = require('mongoose');
-
-const connectDB = async () => {
-    try {
-        const conn = await mongoose.connect(process.env.MONGO_URI);
-        console.log(`MongoDB Connected: ${conn.connection.host}`);
-    } catch (err) {
-        console.error(err);
-        process.exit(1); // Stop app on failure
-    }
-};
-
+const User = require('../users/User');
+const Lab = require('../labs/Lab');
+const Reservation = require('../reservations/Reservation');
 
  const users = [
     {
-        _id: "u001",
+        _id: "12345611",
         email: "john_doe@dlsu.edu.ph",
         password: "hashed_password_123", // In real DB, store hashed passwords
         role: "student",
@@ -26,7 +18,7 @@ const connectDB = async () => {
         accountStatus: "active"
     },
     {
-        _id: "u002",
+        _id: "12345672",
         email: "jane_smith@dlsu.edu.ph",
         password: "hashed_password_456",
         role: "student",
@@ -39,7 +31,7 @@ const connectDB = async () => {
         accountStatus: "active"
     },
     {
-        _id: "u003",
+        _id: "12345673",
         email: "tech_admin@dlsu.edu.ph",
         password: "admin_password_789",
         role: "technician", // Can block slots and remove no-shows
@@ -52,7 +44,7 @@ const connectDB = async () => {
         accountStatus: "active"
     },
     {
-        _id: "u004",
+        _id: "12345674",
         email: "carl_johnson@dlsu.edu.ph",
         password: "hashed_password_321",
         role: "student",
@@ -65,7 +57,7 @@ const connectDB = async () => {
         accountStatus: "active"
     },
     {
-        _id: "u005",
+        _id: "12345675",
         email: "maria_clara@dlsu.edu.ph",
         password: "hashed_password_654",
         role: "student",
@@ -85,7 +77,9 @@ const connectDB = async () => {
         name: "Gokongwei 101A",
         description: "General Purpose Lab - Windows Machines",
         location: "1st Floor, Gokongwei Hall",
-        totalSeats: 40,
+        capacity: 40,
+        openTime: "07:30",
+        closeTime: "20:00",
         image: "images/labs/gk101.jpg"
     },
     {
@@ -93,7 +87,9 @@ const connectDB = async () => {
         name: "Velasco 205",
         description: "Multimedia Lab - Mac Studios",
         location: "2nd Floor, Velasco Hall",
-        totalSeats: 30,
+        capacity: 30,
+        openTime: "07:30",
+        closeTime: "20:00",
         image: "images/labs/vl205.jpg"
     },
     {
@@ -101,7 +97,9 @@ const connectDB = async () => {
         name: "Andrew 909",
         description: "Networking and Cybersecurity Lab",
         location: "9th Floor, Andrew Gonzalez Hall",
-        totalSeats: 25,
+        capacity: 25,
+        openTime: "07:30",
+        closeTime: "20:00",
         image: "images/labs/ag909.jpg"
     },
     {
@@ -109,7 +107,9 @@ const connectDB = async () => {
         name: "Library Cyber Nook",
         description: "Quiet study area with PCs",
         location: "6th Floor, Henry Sy Hall",
-        totalSeats: 15,
+        capacity: 15,
+        openTime: "07:30",
+        closeTime: "20:00",
         image: "images/labs/libnook.jpg"
     },
     {
@@ -117,7 +117,9 @@ const connectDB = async () => {
         name: "Engineering ES301",
         description: "CAD and Simulation Lab",
         location: "3rd Floor, ES Building",
-        totalSeats: 35,
+        capacity: 35,
+        openTime: "07:30",
+        closeTime: "20:00",
         image: "images/labs/es301.jpg"
     }
 ];
@@ -125,7 +127,7 @@ const connectDB = async () => {
  const reservations = [
     {
         _id: "r001",
-        userId: "u001", // John Doe
+        userId: "12345611", // John Doe
         labId: "l001",  // Gokongwei 101A
         seatNumber: 5,
         reservationDate: "2023-11-25",
@@ -137,7 +139,7 @@ const connectDB = async () => {
     },
     {
         _id: "r002",
-        userId: "u002", // Jane Smith
+        userId: "12345672", // Jane Smith
         labId: "l001",  // Gokongwei 101A
         seatNumber: 6,
         reservationDate: "2023-11-25",
@@ -149,7 +151,7 @@ const connectDB = async () => {
     },
     {
         _id: "r003",
-        userId: "u003", // Technician (Walk-in reservation)
+        userId: "12345673", // Technician (Walk-in reservation)
         labId: "l002",  // Velasco 205
         seatNumber: 12,
         reservationDate: "2023-11-25",
@@ -162,7 +164,7 @@ const connectDB = async () => {
     },
     {
         _id: "r004",
-        userId: "u001", // John Doe (Reserving 2 consecutive slots)
+        userId: "12345611", // John Doe (Reserving 2 consecutive slots)
         labId: "l003",  // Andrew 909
         seatNumber: 1,
         reservationDate: "2023-11-26",
@@ -174,7 +176,7 @@ const connectDB = async () => {
     },
     {
         _id: "r005",
-        userId: "u001", // John Doe (Part 2 of his reservation)
+        userId: "12345611", // John Doe (Part 2 of his reservation)
         labId: "l003",
         seatNumber: 1,
         reservationDate: "2023-11-26",
@@ -186,7 +188,7 @@ const connectDB = async () => {
     },
     {
         _id: "r006",
-        userId: "u004", // Carl
+        userId: "12345674", // Carl
         labId: "l001",
         seatNumber: 20,
         reservationDate: "2023-11-25",
@@ -197,4 +199,64 @@ const connectDB = async () => {
         status: "cancelled" // Technician removed this or user cancelled
     }
 ];
-module.exports = {connectDB, users, labs, reservations };
+
+const connectDB = async () => {
+    try {
+        const conn = await mongoose.connect(process.env.MONGO_URI);
+        console.log(`MongoDB Connected: ${conn.connection.host}`);
+
+         // ───── USERS ─────
+            for (let u of users) {
+              // Skip deleted accounts
+              if (u.accountStatus === 'deleted') continue;
+        
+              // Check if user already exists
+              const existing = await User.findOne({ $or: [{ email: u.email }, { _id: u._id }] });
+              if (existing) continue;
+        
+              const newUser = new User({
+                  _id: u._id,
+                  name: `${u.profile.firstName} ${u.profile.lastName}`,
+                  email: u.email,
+                  password: u.password,
+                  role: u.role,
+                  profilePic: u.profile.profilePicture,
+                  bio: u.profile.description
+              });
+        
+              newUser.isAlreadyHashed = true; 
+              
+              await newUser.save();
+            }
+
+        // LABS
+                for (let l of labs) {
+                  const existingLab = await Lab.findById(l._id);
+                  if (existingLab) continue;
+            
+                  await Lab.create(l);
+            }
+         // ───── RESERVATIONS ─────
+            for (let r of reservations) {
+              const existingRes = await Reservation.findById(r._id);
+              if (existingRes) continue;
+        
+              await Reservation.create({
+                _id: r._id,
+                userId: r.userId,        
+                labId: r.labId,         
+                seatNumbers: [r.seatNumber],             
+                reservationDate: r.reservationDate,
+                timeSlots: [r.timeSlotStart, r.timeSlotEnd], 
+                anonymous: r.isAnonymous,               
+                status: r.status,
+                walkInStudent: r.walkInStudent || null
+              });
+            }
+
+    } catch (err) {
+        console.error(err);
+        process.exit(1); // Stop app on failure
+    }
+};
+module.exports = {connectDB};

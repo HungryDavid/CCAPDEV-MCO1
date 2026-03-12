@@ -3,25 +3,25 @@ const CustomError = require('../util/CustomError');
 const moment = require('moment');
 
 const reservationSchema = new mongoose.Schema({
-  studentId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    default: null // null if anonymous
-  },
-  walkInStudent: {
+  _id: {
     type: String,
-    default: null 
+    required: true
+  },
+  userId: {
+    type: String,
+    ref: 'Student',
+    default: null
   },
   anonymous: {
     type: Boolean,
     default: false
   },
-  laboratory: {
-    type: mongoose.Schema.Types.ObjectId,
+  labId: {
+     type: String,
     ref: 'Laboratory',
     required: true
   },
-  date: {
+  reservationDate: {
     type: String, // 'YYYY-MM-DD'
     required: true
   },
@@ -35,9 +35,18 @@ const reservationSchema = new mongoose.Schema({
     required: true,
     validate: [arr => arr.length > 0, 'Must select at least one seat']
   },
-  createdAt: {
+  reservedAt: {
     type: Date,
     default: Date.now
+  },
+  status: {
+    type: String,
+    enum: ['active', 'cancelled', 'completed'],
+    default: 'active'
+  },
+  walkInStudent: {
+    type: String,
+    default: null
   }
 }, {
   timestamps: true
@@ -109,13 +118,13 @@ reservationSchema.statics.checkSlotStatus = async function(selectedLab, selected
 /**
  * Create a new reservation safely
  */
-reservationSchema.statics.checkUserReservationConflict = async function (studentId, laboratory, date, timeSlots) {
+reservationSchema.statics.checkUserReservationConflict = async function (userId, labId, reservationDate, timeSlots) {
   // Check if the user has already made a reservation for the same lab, date, and time slot
   for (const time of timeSlots) {
     const existingReservation = await this.findOne({
-      studentId,
-      laboratory,
-      date,
+      userId,
+      labId,
+      reservationDate,
       timeSlots: time
     });
 
@@ -125,10 +134,10 @@ reservationSchema.statics.checkUserReservationConflict = async function (student
   }
 };
 
-reservationSchema.statics.checkSeatAvailabilityConflict = async function (laboratory, date, timeSlots, seatNumbers) {
+reservationSchema.statics.checkSeatAvailabilityConflict = async function (labId, reservationDate, timeSlots, seatNumbers) {
   // Check conflicts for each time slot (seat availability)
   for (const time of timeSlots) {
-    const existing = await this.find({ laboratory, date, timeSlots: time });
+    const existing = await this.find({ labId, reservationDate, timeSlots: time });
     const reservedSeats = existing.flatMap(r => r.seatNumbers);
 
     const conflict = seatNumbers.some(seat => reservedSeats.includes(seat));
@@ -138,26 +147,24 @@ reservationSchema.statics.checkSeatAvailabilityConflict = async function (labora
   }
 };
 
-reservationSchema.statics.createReservation = async function ({ studentId, walkInStudent, anonymous, laboratory, date, timeSlots, seatNumbers }) {
+reservationSchema.statics.createReservation = async function ({ userId, anonymous, labId, reservationDate, timeSlots, seatNumbers }) {
   // Validate input data directly within the model
   try {
 
-    console.log('laboratory:', laboratory);
-    console.log('date:', date);
+    console.log('laboratory:', labId);
+    console.log('date:', reservationDate);
     console.log('timeSlots:', timeSlots);
     console.log('seatNumbers:', seatNumbers);
 
-    if (!laboratory || !date || !timeSlots || !seatNumbers || timeSlots.length === 0 || seatNumbers.length === 0) {
+    if (!labId || !reservationDate || !timeSlots || !seatNumbers || timeSlots.length === 0 || seatNumbers.length === 0) {
       throw new CustomError(400, 'BadRequest', "Invalid request, missing labId, date, time slots, or seat numbers.");
     }
     // Check for any user reservation conflicts
-    if (studentId) {
-      await this.checkUserReservationConflict(studentId, laboratory, date, timeSlots);
-    }
+    await this.checkUserReservationConflict(userId, labId, reservationDate, timeSlots);
     // Then, check for any seat availability conflicts
-    await this.checkSeatAvailabilityConflict(laboratory, date, timeSlots, seatNumbers);
+    await this.checkSeatAvailabilityConflict(labId, reservationDate, timeSlots, seatNumbers);
     // If no conflicts, proceed with creating the reservation
-    return this.create({ studentId, walkInStudent, anonymous, laboratory, date, timeSlots, seatNumbers });
+    return this.create({ userId, anonymous, labId, reservationDate, timeSlots, seatNumbers });
   } catch (err) {
     console.log(err);
     if (err instanceof CustomError) {

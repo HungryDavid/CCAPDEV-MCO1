@@ -4,6 +4,9 @@ const moment = require('moment'); // You can use moment.js for easier date handl
 const CustomError = require('../util/CustomError');
 
 const laboratorySchema = new mongoose.Schema({
+  _id: {
+    type: String
+  },
   name: {
     type: String,
     required: [true, 'A lab must have a name'],
@@ -257,20 +260,10 @@ laboratorySchema.statics.getLabSeats = async function(labName, timeSlot, date) {
     const seatMap = new Map();
     reservations.forEach(res => {
       res.seatNumbers.forEach(seat => {
-        let displayName = 'Unknown';
-      if (res.walkInStudent) {
-        displayName = `Walk-in: ${res.walkInStudent}`; 
-      } else if (res.anonymous) {
-        displayName = 'Anonymous'; 
-      } else if (res.studentId?.name) {
-        displayName = res.studentId.name; 
-      }
-
         seatMap.set(seat.toString(), { // normalize
-          user: { 
-            name: displayName, 
-            id: res.studentId?._id || null 
-          },
+          user: res.anonymous
+            ? { name: 'Anonymous', id: null }
+            : { name: res.studentId?.name || 'Unknown', id: res.studentId?._id || null },
           status: 'reserved'
         });
       });

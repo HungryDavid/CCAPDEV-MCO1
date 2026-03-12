@@ -24,12 +24,11 @@ const userSchema = new mongoose.Schema(
       },
     },
     // User's ID number (should be 8 digits)
-    idNumber: {
+    _id: {
       type: String,
-      required: [true, 'ID Number is required'],
-      unique: true, // Ensure ID number is unique
-      trim: true, // Remove leading/trailing spaces
-      match: [/^\d{8}$/, 'ID Number must be exactly 8 digits'], // Validate the format
+      required: true,
+      trim: true,
+      match: [/^\d{8}$/, 'ID Number must be exactly 8 digits']
     },
     // User's role (either student or technician)
     role: {
@@ -84,13 +83,13 @@ userSchema.pre('save', async function () {
   this.password = await bcrypt.hash(this.password, 12);
 });
 
-userSchema.index({ email: 1, idNumber: 1 });
+userSchema.index({ email: 1, _id: 1 });
 
 
 //MODEL LEVEL
-userSchema.statics.doesUserExist = async function (email, idNumber) {
+userSchema.statics.doesUserExist = async function (email, _id) {
   const user = await this.findOne({
-    $or: [{ email }, { idNumber }],
+    $or: [{ email }, { _id }],
   });
   return user;
 };
@@ -103,14 +102,14 @@ userSchema.methods.isCorrectPassword = async function (candidatePassword) {
 
 // --- STATIC METHODS (Business Logic) ---
 userSchema.statics.createUser = async function (userData) {
-  const { email, idNumber, password } = userData;
+  const { email, _id, password } = userData;
 
-  if (!email || !idNumber || !password) {
+  if (!email || !_id || !password) {
     throw new Error('Please fill in all fields.');
   }
 
   // Check if email or ID number already exists
-  const exisitingUser = await this.doesUserExist(email, idNumber);
+  const exisitingUser = await this.doesUserExist(email, _id);
 
   if (exisitingUser) {
     const field = exisitingUser.email === email ? 'Email' : 'ID Number';
@@ -131,6 +130,7 @@ userSchema.statics.createUser = async function (userData) {
     ...userData,
     name,
     role,
+    _id: _id
   });
 
   return newUser;
@@ -191,7 +191,7 @@ userSchema.statics.loginUser = async function (identifier, password) {
 
   const query = identifier.includes('@') 
     ? { email: identifier.toLowerCase() } 
-    : { idNumber: identifier };
+    : { _id: identifier };
 
   const user = await this.findOne(query).select('+password');
   if (!user) {
@@ -216,7 +216,7 @@ userSchema.statics.readUserSafeAndPublic = async function (identifier) {
   const baseQuery = {
     $or: [
       { email: identifier.toLowerCase() },
-      { idNumber: identifier }
+      { _id: identifier }
     ]
   };
 
