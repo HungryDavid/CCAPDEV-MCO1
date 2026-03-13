@@ -7,8 +7,6 @@ router.get("/:labName/availability", controller.getSeatStatus);
 router.get('/slots-availability', controller.getAllAvailableLabs);
 router.post('/slots-availability/:labName', controller.getLabSeats);
 
-
-
 authorize('technician');
 router.post('/manage/create', controller.createLab);
 router.get('/manage/:id/edit', controller.getLabById);

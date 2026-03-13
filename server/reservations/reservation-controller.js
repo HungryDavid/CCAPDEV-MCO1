@@ -14,17 +14,12 @@ exports.createReservation = async (req, res) => {
     }
 
     const anonymous = false;
-
-    // 1️⃣ Get labId from lab name
     const labId = await Laboratory.getIdByName(selectedLab);
 
-    // 2️⃣ Transform labCart into slots array
-    // labCart = { "16:00": { seatNumber: "15", status: "available" } }
     const slots = [];
     for (const [timeSlot, seatObj] of Object.entries(labCart)) {
       if (!seatObj || !seatObj.seatNumber) continue;
 
-      // Convert seatNumber to number
       const seatNumber = Number(seatObj.seatNumber);
       if (isNaN(seatNumber)) continue;
 
@@ -35,7 +30,6 @@ exports.createReservation = async (req, res) => {
       return res.status(400).json({ message: "No seats selected." });
     }
 
-    // 3️⃣ Call the model to handle creation
     await Reservation.createReservation({
       studentId,
       anonymous,
@@ -91,15 +85,13 @@ exports.updateReservation = async (req, res) => {
       return res.status(400).json({ message: 'Reservation ID and session cart are required.' });
     }
 
-    // 1️⃣ Update reservation using model method
     const updatedReservation = await Reservation.updateReservationFromCart(reservationId, sessionCart);
 
-    // 2️⃣ Format slots for response
     const formattedSlots = {};
     updatedReservation.slots.forEach(slot => {
       formattedSlots[slot.timeSlot] = {
         seatNumber: String(slot.seatNumber),
-        status: 'available' // you can also compute reserved/expired if needed
+        status: 'available'
       };
     });
 
@@ -110,7 +102,6 @@ exports.updateReservation = async (req, res) => {
     });
 
   } catch (err) {
-    console.log(err);
     console.error('Error updating reservation:', err);
     const statusCode = err.errorNumber || 500;
     res.status(statusCode).json({
@@ -154,7 +145,7 @@ exports.deleteReservation = async (req, res) => {
       return res.status(400).send({ error: "Invalid seat number provided." });
     }
 
-     console.log(labName, bookingDate, bookingTime, seat);
+    console.log(labName, bookingDate, bookingTime, seat);
 
     let { id } = req.body;
     if (labName && bookingDate && bookingTime && seat) {
@@ -179,17 +170,13 @@ exports.deleteReservation = async (req, res) => {
 
 exports.checkSeatAvailability = async (req, res, next) => {
   try {
-    // Extract data from the request body
-
     const { selectedLab, selectedDate, labCart } = req.body;
     const timeSlots = Object.keys(labCart);
     const seatNumbers = Object.values(labCart);
     const labId = await Laboratory.getIdByName(selectedLab);
     const slotStatus = await Reservation.checkSlotStatus(labId, selectedDate, labCart);
     return res.json(slotStatus);
-
   } catch (error) {
-    console.error(error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
