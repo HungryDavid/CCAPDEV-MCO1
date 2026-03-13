@@ -1,4 +1,4 @@
-# CCAPDEV-MCO1: Laboratory Reservation System
+# CCAPDEV-MCO Laboratory Reservation System
 
 This project is a web-based laboratory reservation system designed for students, lab technicians, and guests at DLSU. It allows users to reserve seats in various laboratories, manage reservations, and view availability.
 
