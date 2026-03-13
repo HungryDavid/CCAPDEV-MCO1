@@ -15,16 +15,17 @@ document.addEventListener("DOMContentLoaded", function () {
   const bookingDate = bookingDateElement?.value;
   let bookingTime = bookingTimeElement?.value;
   let selectedLab = labElement?.value;
-  const reservationId = reservationIdElement?.value; // safe access, even if element is missing
+  const reservationId = reservationIdElement?.value; 
   const isTechnician = document.getElementById("isTechnician").value === "true";
 
   const isAnonymousCheckbox = document.getElementById("isAnonymous");
 
+
   const cartInput = document.getElementById("cartSessionInput");
   if (cartInput && cartInput.value) {
     try {
-      const cartData = JSON.parse(cartInput.value); // parse server JSON
-      sessionStorage.setItem("labCart", JSON.stringify(cartData)); // overwrite existing cart
+      const cartData = JSON.parse(cartInput.value); 
+      sessionStorage.setItem("labCart", JSON.stringify(cartData)); 
       console.log("Cart restored/overwritten from server:", cartData);
     } catch (e) {
       console.error("Invalid cart data in cartSessionInput:", e);
@@ -47,17 +48,13 @@ document.addEventListener("DOMContentLoaded", function () {
       const studentIdNumber = button.dataset.studentId; // idNumber from backend
 
       if (studentIdNumber) {
-        // Reserved seat: navigate to user search page
         window.location.href = `/user/search?q=${encodeURIComponent(studentIdNumber)}`;
-        return; // stop further execution
+        return; 
       }
 
-      // No studentIdNumber: stay on page, add seat to cart
       labCart[bookingTime] = { seatNumber, status: 'Checking...' };
       sessionStorage.setItem("labCart", JSON.stringify(labCart));
       renderSelectedSeats();
-      // Optional: alert can be removed for smoother UX
-      // alert(`Seat ${seatNumber} has been added/updated for the time slot ${bookingTime}.`);
     });
   });
 
@@ -98,23 +95,36 @@ document.addEventListener("DOMContentLoaded", function () {
 
         // Only allow delete if slot time is in the future
         if (reservationId) {
-          if (slotDateTime > now) {
-            const deleteButton = document.createElement("button");
-            deleteButton.classList.add("btn", "btn-danger");
-            deleteButton.textContent = "Delete";
-            deleteButton.addEventListener("click", function () {
-              deleteSeat(bookingTime);
-            });
-            actionCell.appendChild(deleteButton);
+
+          if (isTechnician) {
+
+            // Technician rule: allow delete only 10 minutes after slot time
+            const slotPlus10 = new Date(slotDateTime.getTime() + 10 * 60000);
+
+            if (now >= slotPlus10) {
+              const deleteButton = document.createElement("button");
+              deleteButton.classList.add("btn", "btn-danger");
+              deleteButton.textContent = "Delete";
+              deleteButton.addEventListener("click", function () {
+                deleteSeat(bookingTime);
+              });
+              actionCell.appendChild(deleteButton);
+            }
+
+          } else {
+
+            // Normal users: only if slot time is in the future
+            if (slotDateTime > now) {
+              const deleteButton = document.createElement("button");
+              deleteButton.classList.add("btn", "btn-danger");
+              deleteButton.textContent = "Delete";
+              deleteButton.addEventListener("click", function () {
+                deleteSeat(bookingTime);
+              });
+              actionCell.appendChild(deleteButton);
+            }
+
           }
-        } else {
-          const deleteButton = document.createElement("button");
-          deleteButton.classList.add("btn", "btn-danger");
-          deleteButton.textContent = "Delete";
-          deleteButton.addEventListener("click", function () {
-            deleteSeat(bookingTime);
-          });
-          actionCell.appendChild(deleteButton);
 
         }
 
@@ -266,7 +276,7 @@ document.addEventListener("DOMContentLoaded", function () {
           reservationId,
           selectedLab,
           selectedDate: bookingDateElement?.value,
-          sessionCart: labCart   // ✅ fix
+          sessionCart: labCart
         }),
       });
 
@@ -316,17 +326,13 @@ document.addEventListener("DOMContentLoaded", function () {
   deleteButton?.addEventListener("click", function (e) {
     e.preventDefault(); // Prevent default form submission
 
-    // Ask technician for seat number
     const seatNumber = prompt("Enter seat number to delete:")?.trim();
     if (!seatNumber) return alert("Seat number is required!");
 
-    // Optional confirmation
     if (!confirm(`Are you sure you want to delete reservation for seat ${seatNumber}?`)) return;
 
-    // Set the hidden input value before submitting
     deleteSeatInput.value = seatNumber;
 
-    // Submit the form
     deleteForm.submit();
   });
 

@@ -100,7 +100,7 @@ userSchema.statics.createUser = async function (userData) {
     throw new Error(`${field} is already registered.`);
   }
 
-  const role = email.toLowerCase().includes('technician') ? 'technician' : 'student';
+  const role = 'student';
 
   const name = email
     .split('@')[0]
