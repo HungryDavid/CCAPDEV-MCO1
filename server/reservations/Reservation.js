@@ -226,6 +226,53 @@ reservationSchema.statics.getUpcomingReservationsByUser = async function (userId
   }
 };
 
+reservationSchema.statics.getPastReservationsByUser = async function (userId) {
+  try {
+    const now = moment();
+
+    const reservations = await this.find({ studentId: userId })
+      .populate('laboratory', 'name')
+      .select('_id laboratory slots date createdAt')
+      .sort({ date: -1 })
+      .lean();
+
+    const formatDateTime = (date) => {
+      const d = new Date(date);
+      const pad = (n) => n.toString().padStart(2, '0');
+      return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+    };
+
+    const pastReservations = reservations
+      .filter(res => {
+        if (!res.slots || res.slots.length === 0) return false;
+
+        // include only if ALL slots are past
+        return res.slots.every(slot => {
+          const slotMoment = moment(`${res.date} ${slot.timeSlot}`, 'YYYY-MM-DD HH:mm');
+          return slotMoment.isBefore(now);
+        });
+      })
+      .map(res => {
+        const seats = res.slots.map(s => s.seatNumber).join(', ');
+        const times = res.slots.map(s => s.timeSlot).join(', ');
+
+        return {
+          reservationId: res._id,
+          laboratory: res.laboratory?.name || 'Unknown',
+          date: res.date,
+          seats,
+          time: times,
+          dateTimeCreated: formatDateTime(res.createdAt)
+        };
+      });
+
+    return pastReservations;
+
+  } catch (err) {
+    throw err;
+  }
+};
+
 reservationSchema.statics.getReservationIdByLabNameDateTimeSeat = async function (labName, date, timeSlot, seatNumber) {
   if (!labName || !date || !timeSlot || seatNumber === undefined) {
     throw new Error('labName, date, timeSlot, and seatNumber are required');

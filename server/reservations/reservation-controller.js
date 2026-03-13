@@ -56,7 +56,7 @@ exports.getReservationById = async (req, res) => {
   try {
     const sessionUser = await User.readUserByIdSafe(req.session.userId).lean();
     const reservations = await Reservation.getUpcomingReservationsByUser(req.session.userId);
-
+    const pastReservations = await Reservation.getPastReservationsByUser(req.session.userId);
     res.render('my-reservations', {
       user: sessionUser,
       account: sessionUser,
@@ -64,7 +64,8 @@ exports.getReservationById = async (req, res) => {
       headerTitle: 'My Reservations',
       layout: 'dashboard',
       activePage: 'my-reservations',
-      reservations
+      reservations,
+      pastReservations
     });
 
   } catch (err) {

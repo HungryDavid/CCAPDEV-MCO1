@@ -76,54 +76,57 @@ module.exports = {
 
     // 12. TIME SLOTS HELPER
     getTimeSlots: function (intervalMinutes = 30, start = "19:30", end = "07:15", date = null) {
-        const slots = [];
+    const slots = [];
 
-        // Force start time to always be 00:00
-        const [startH, startM] = [0, 0];  // 00:00 as the start time
-        const [endH, endM] = end.split(":").map(Number);
+    const [startH, startM] = start.split(":").map(Number);
+    const [endH, endM] = end.split(":").map(Number);
 
-        let startTime, endTime;
+    let startTime, endTime;
 
-        // Use provided date or default to today (in local time zone)
-        const localDate = new Date().toLocaleDateString('en-CA');  // Local date in YYYY-MM-DD format
-        if (date) {
-            startTime = new Date(date);
-            endTime = new Date(date);
-        } else {
-            startTime = new Date(localDate);
-            endTime = new Date(localDate);
-        }
+    const localDate = new Date().toLocaleDateString('en-CA');
 
-        startTime.setHours(startH, startM, 0, 0); // Set start time to 00:00
-        endTime.setHours(Math.min(endH, 23), Math.min(endM, 59), 0, 0); // Cap end time at 23:59
-
-        // If the start time is after the end time, move the end time to the next day
-        if (startTime > endTime) {
-            endTime.setDate(endTime.getDate() + 1);
-        }
-
-        // Check if the date is today (skip past time slots if it's today)
-        const now = new Date();
-        const isToday = !date || date === localDate;
-
-        let slotTime = new Date(startTime);
-        while (slotTime <= endTime) {
-            // If the date is today and the slotTime is in the past, skip it
-            if (isToday && slotTime <= now) {
-                slotTime.setMinutes(slotTime.getMinutes() + intervalMinutes);
-                continue;
-            }
-
-            // Format the time and push it into the slots array
-            const formatted = slotTime.toLocaleTimeString("en-GB", {
-                hour: "2-digit",
-                minute: "2-digit",
-                hour12: false
-            });
-            slots.push(formatted);
-            slotTime.setMinutes(slotTime.getMinutes() + intervalMinutes);
-        }
-
-        return slots;
+    if (date) {
+        startTime = new Date(date);
+        endTime = new Date(date);
+    } else {
+        startTime = new Date(localDate);
+        endTime = new Date(localDate);
     }
+
+    startTime.setHours(startH, startM, 0, 0);
+    endTime.setHours(Math.min(endH, 23), Math.min(endM, 59), 0, 0);
+
+    if (startTime > endTime) {
+        endTime.setDate(endTime.getDate() + 1);
+    }
+
+    const now = new Date();
+    const isToday = !date || date === localDate;
+
+    let slotTime = new Date(startTime);
+
+    while (slotTime <= endTime) {
+
+        const slotEnd = new Date(slotTime);
+        slotEnd.setMinutes(slotEnd.getMinutes() + intervalMinutes);
+
+        // Skip only if the whole slot already finished
+        if (isToday && now >= slotEnd) {
+            slotTime.setMinutes(slotTime.getMinutes() + intervalMinutes);
+            continue;
+        }
+
+        const formatted = slotTime.toLocaleTimeString("en-GB", {
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: false
+        });
+
+        slots.push(formatted);
+
+        slotTime.setMinutes(slotTime.getMinutes() + intervalMinutes);
+    }
+
+    return slots;
+}
 };
