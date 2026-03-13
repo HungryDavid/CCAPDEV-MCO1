@@ -100,15 +100,12 @@ laboratorySchema.statics.getIdByName = async function (labName) {
  */
 laboratorySchema.statics.areSeatsAvailable = async function (labName, date, timeSlots, seatNumbers) {
   try {
-    // Find the laboratory
     const lab = await this.findOne({ name: labName });
     if (!lab) throw new Error(`Laboratory "${labName}" not found.`);
 
-    // Query reservations for that lab & date
     const Reservation = mongoose.model('Reservation');
     const existingReservations = await Reservation.find({ laboratory: lab._id, date });
 
-    // 3Check each requested time slot for seat conflicts
     for (const time of timeSlots) {
       // Get all seats already reserved at this time
       const reservedSeats = existingReservations
@@ -117,7 +114,6 @@ laboratorySchema.statics.areSeatsAvailable = async function (labName, date, time
           .map(s => s.seatNumber)
         );
 
-      // Check if any requested seat is already taken
       const conflict = seatNumbers.some(seat => reservedSeats.includes(seat));
       if (conflict) {
         return false;
@@ -156,7 +152,7 @@ laboratorySchema.statics.getAvailableLabs = async function (bookingDate, booking
     const booking = moment(bookingTime, "HH:mm");
 
     if (!booking.isBetween(open, close, undefined, "[)")) {
-      return null; // booking time not within lab schedule
+      return null; 
     }
 
     const labReservations = reservations.filter(
@@ -171,7 +167,6 @@ laboratorySchema.statics.getAvailableLabs = async function (bookingDate, booking
 
     const freeSeats = lab.capacity - reservedSeats.length;
 
-    // Assign building image
     let image = lab.image || "lab-default.jpg";
     if (lab.name.startsWith("GK")) image = "/imgs/gk-building.jpg";
     else if (lab.name.startsWith("LS")) image = "/imgs/ls-building.png";
@@ -192,7 +187,6 @@ laboratorySchema.statics.getLabSeats = async function(labName, timeSlot, date) {
   const lab = await this.findOne({ name: labName });
   if (!lab) throw new CustomError(404, 'Not Found', 'Lab not found.');
 
-  // Query reservations for this lab and date
   const query = { laboratory: lab._id, date };
   if (timeSlot) query["slots.timeSlot"] = timeSlot;
 
@@ -211,7 +205,7 @@ laboratorySchema.statics.getLabSeats = async function(labName, timeSlot, date) {
             : { 
                 name: res.studentId?.name || 'Unknown', 
                 id: res.studentId?._id || null,
-                idNumber: res.studentId?.idNumber || null  // <-- use idNumber
+                idNumber: res.studentId?.idNumber || null 
               },
           status: 'reserved'
         });

@@ -196,7 +196,7 @@ reservationSchema.statics.getUpcomingReservationsByUser = async function (userId
     const upcomingReservations = reservations.filter(res => {
       return res.slots?.some(slot => {
         const slotMoment = moment(`${res.date} ${slot.timeSlot}`, 'YYYY-MM-DD HH:mm');
-        return slotMoment.isSameOrAfter(now); // slot is current or upcoming
+        return slotMoment.isSameOrAfter(now);
       });
     });
 

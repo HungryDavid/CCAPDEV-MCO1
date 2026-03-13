@@ -1,4 +1,3 @@
-<!-- TIME SELECT FORM -->
 <form id="timeSelectForm" method="POST" action="/labs/slots-availability/{{lab.name}}">
   <div class="container mt-4">
     {{#if reservation.laboratory.name}}
@@ -38,17 +37,16 @@
 <div class="row" id="seatGrid">
   {{#each labSeats}}
   <div class="col-md-2 col-3 mb-2">
-<button class="btn seat-btn w-100 {{#if (eq this.status "reserved")}}btn-outline-danger{{else}}btn-outline-primary{{/if}}" 
-        data-seat="{{this.seatNumber}}"
-        data-booking-time="{{../selectedTime}}" 
-        data-student-id="{{this.user.idNumber}}" 
-        title="{{#if (eq this.status "reserved")}}{{this.user.name}}{{else}}Available{{/if}}">
-    {{#if (eq this.status "reserved")}}
-        {{this.user.name}}
-    {{else}}
-        {{this.seatNumber}}
-    {{/if}}
-</button>
+    <button class="btn seat-btn w-100 {{#if (eq this.status "
+      reserved")}}btn-outline-danger{{else}}btn-outline-primary{{/if}}" data-seat="{{this.seatNumber}}"
+      data-booking-time="{{../selectedTime}}" data-student-id="{{this.user.idNumber}}" title="{{#if (eq this.status "
+      reserved")}}{{this.user.name}}{{else}}Available{{/if}}">
+      {{#if (eq this.status "reserved")}}
+      {{this.user.name}}
+      {{else}}
+      {{this.seatNumber}}
+      {{/if}}
+    </button>
   </div>
   {{/each}}
 </div>
@@ -62,45 +60,41 @@
         <th>Time</th>
         <th>Seat Number</th>
         <th>Status</th>
-        <th>Action</th> <!-- Delete column -->
+        <th>Action</th>
       </tr>
     </thead>
     <tbody id="selectedSeatsTableBody">
 
-      <!-- Selected seats will be dynamically inserted here -->
     </tbody>
   </table>
 
   <!-- Confirm Reservation Button -->
   <div class="text-center mt-3">
     {{#if reservation}}
-    <!-- Reservation exists: show update button, hide confirm -->
     <button id="updateButton" class="btn btn-primary">
       Update Reservation
     </button>
     {{else}}
-    <!-- No reservation: show confirm button, hide update -->
     <button id="confirmReservationBtn" class="btn btn-success">
       Confirm Reservation
     </button>
     {{/if}}
 
-      {{#if isTechnician}}
-    <!-- Only visible to technicians -->
+    {{#if isTechnician}}
     <button id="editReservationBtn" class="btn btn-warning ms-2">
       Edit
     </button>
 
-  <form id="deleteReservationForm" method="POST" action="/reservation/delete" class="d-inline">
-    <input type="hidden" name="labName" value="{{lab.name}}" />
-    <input type="hidden" name="bookingDate" value="{{selectedDate}}" />
-    <input type="hidden" name="bookingTime" value="{{selectedTime}}" />
-    <input type="hidden" name="seatNumber" id="deleteSeatNumber" />
-    <input type="hidden" name="seatNumber" id="seatNumber" />
-    <button type="submit" class="btn btn-danger" id="deleteReservationBtn">Delete</button>
-  </form>
-  
-  {{/if}}
+    <form id="deleteReservationForm" method="POST" action="/reservation/delete" class="d-inline">
+      <input type="hidden" name="labName" value="{{lab.name}}" />
+      <input type="hidden" name="bookingDate" value="{{selectedDate}}" />
+      <input type="hidden" name="bookingTime" value="{{selectedTime}}" />
+      <input type="hidden" name="seatNumber" id="deleteSeatNumber" />
+      <input type="hidden" name="seatNumber" id="seatNumber" />
+      <button type="submit" class="btn btn-danger" id="deleteReservationBtn">Delete</button>
+    </form>
+
+    {{/if}}
   </div>
 </div>
 
