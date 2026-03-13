@@ -6,11 +6,11 @@ const { getTimeSlots, renderErrorPage } = require('../util/helpers');
 
 exports.createReservation = async (req, res) => {
   try {
-    const { isAnonymous, studentNumber, selectedLab, selectedDate, labCart } = req.body;
+    const { isAnonymous, userId, selectedLab, selectedDate, labCart } = req.body;
     let studentId = req.session.userId;
 
     if (req.session.role === "technician") {
-      studentId = await User.getIdByStudentId(studentNumber);
+      studentId = await User.getIdByStudentId(userId);
     }
 
     const labId = await Laboratory.getIdByName(selectedLab);
@@ -30,11 +30,12 @@ exports.createReservation = async (req, res) => {
     }
 
     await Reservation.createReservation({
-      studentId,
-      isAnonymous,
-      laboratory: labId,
-      date: selectedDate,
-      slots
+      userId: studentId,         
+      anonymous: isAnonymous,   
+      labId: labId,              
+      reservationDate: selectedDate, 
+      timeSlots: slots.map(s => s.timeSlot), 
+      seatNumbers: slots.map(s => s.seatNumber) 
     });
 
     res.status(200).json({
@@ -76,13 +77,13 @@ exports.getReservationById = async (req, res) => {
 
 exports.updateReservation = async (req, res) => {
   try {
-    const { isAnonymous, reservationId, sessionCart } = req.body;
+    const { isAnonymous, _id, sessionCart } = req.body;
 
-    if (!reservationId || !sessionCart || Object.keys(sessionCart).length === 0) {
+    if (!_id || !sessionCart || Object.keys(sessionCart).length === 0) {
       return res.status(400).json({ message: 'Reservation ID and session cart are required.' });
     }
 
-    const updatedReservation = await Reservation.updateReservationFromCart(reservationId, sessionCart, isAnonymous);
+    const updatedReservation = await Reservation.updateReservationFromCart(_id, sessionCart, isAnonymous);
 
     const formattedSlots = {};
     updatedReservation.slots.forEach(slot => {
@@ -94,7 +95,7 @@ exports.updateReservation = async (req, res) => {
 
     res.status(200).json({
       message: 'Reservation updated successfully.',
-      reservationId: updatedReservation._id,
+      _id: updatedReservation._id,
       slots: formattedSlots
     });
 
@@ -113,7 +114,7 @@ exports.getReservations = async (req, res) => {
 
     const filter = {};
 
-    if (req.query.lab) filter.laboratory = req.query.lab;
+    if (req.query.lab) filter.labId = req.query.lab;
     if (req.query.date) filter.date = req.query.date;
     if (req.query.student) filter.studentId = req.query.student;
 
