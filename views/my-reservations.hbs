@@ -106,7 +106,7 @@
 
         </div>
 
-            <div class="col-12 col-sm-11 col-md-10 col-lg-8">
+        <div class="col-12 col-sm-11 col-md-10 col-lg-8">
 
             <h1 class="fw-semibold fs-4 text-center pb-3 pt-2">
                 Past Reservations
@@ -148,46 +148,90 @@
                 <p class="text-center text-muted">No Past Reservations</p>
                 {{/if}}
             </div>
+        </div>
+
+        <div class="d-none d-md-block table-responsive rounded-3 shadow-sm">
+                <table class="table table-bordered table-hover align-middle mb-0">
+                    <thead class="table-secondary">
+                        <tr>
+                            <th class="fw-semibold">Reservation ID</th>
+                            <th class="fw-semibold">DateTime Requested</th>
+                            <th class="fw-semibold">Date</th>
+                            <th class="fw-semibold">Time</th>
+                            <th class="fw-semibold">Laboratory</th>
+                            <th class="fw-semibold">Seat#</th>
+                            <th class="fw-semibold text-center">Status</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {{#if pastReservations}}
+                        {{#each pastReservations}}
+                        <tr>
+                            <td>{{this.reservationId}}</td>
+                            <td>{{this.dateTimeCreated}}</td>
+                            <td>{{this.date}}</td>
+                            <td>{{this.time}}</td>
+                            <td>{{this.laboratory}}</td>
+                            <td>{{this.seats}}</td>
+                            <td class="text-center">
+                                <span class="badge bg-secondary">
+                                    Completed
+                                </span>
+                            </td>
+                        </tr>
+                        {{/each}}
+                        {{else}}
+                        <tr>
+                            <td colspan="7" class="text-center text-muted">
+                                No Past Reservations
+                            </td>
+                        </tr>
+                        {{/if}}
+                    </tbody>
+
+                </table>
+            </div>
+
     </div>
-</div>
 
-<!--delete modal-->
+    <!--delete modal-->
 
-<div class="modal fade" id="deleteReservationModal" tabindex="-1" aria-labelledby="deleteReservationModalLabel"
-    aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content border-0 rounded-3 rounded-md-4 shadow">
+    <div class="modal fade" id="deleteReservationModal" tabindex="-1" aria-labelledby="deleteReservationModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 rounded-3 rounded-md-4 shadow">
 
-            <div class="modal-header border-0 pb-2 pb-sm-0">
-                <h5 class="modal-title fw-bold text-danger fs-6 fs-sm-5" id="deleteReservationModalLabel">
-                    Delete Reservation
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
+                <div class="modal-header border-0 pb-2 pb-sm-0">
+                    <h5 class="modal-title fw-bold text-danger fs-6 fs-sm-5" id="deleteReservationModalLabel">
+                        Delete Reservation
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
 
-            <div class="modal-body pt-2 pt-sm-3">
-                <p class="mb-2 small">Are you sure you want to delete this reservation?</p>
-            </div>
+                <div class="modal-body pt-2 pt-sm-3">
+                    <p class="mb-2 small">Are you sure you want to delete this reservation?</p>
+                </div>
 
-            <div class="modal-footer border-0 pt-0 d-flex flex-column flex-sm-row gap-2">
-                <button type="button" class="btn btn-secondary rounded-2 rounded-md-3 w-100 order-2 order-sm-1"
-                    data-bs-dismiss="modal">
-                    Cancel
-                </button>
-
-                <form id="delete-reservation-form" action="/reservation/delete" method="POST"
-                    class="w-100 order-1 order-sm-2">
-                    <input type="hidden" name="id" id="delete-reservation-id" /> <!-- NEW -->
-                    <button type="submit" class="btn btn-danger rounded-2 rounded-md-3 w-100">
-                        <i class="bi bi-trash3 me-1"></i>
-                        Yes, Delete
+                <div class="modal-footer border-0 pt-0 d-flex flex-column flex-sm-row gap-2">
+                    <button type="button" class="btn btn-secondary rounded-2 rounded-md-3 w-100 order-2 order-sm-1"
+                        data-bs-dismiss="modal">
+                        Cancel
                     </button>
-                </form>
-            </div>
 
+                    <form id="delete-reservation-form" action="/reservation/delete" method="POST"
+                        class="w-100 order-1 order-sm-2">
+                        <input type="hidden" name="id" id="delete-reservation-id" /> <!-- NEW -->
+                        <button type="submit" class="btn btn-danger rounded-2 rounded-md-3 w-100">
+                            <i class="bi bi-trash3 me-1"></i>
+                            Yes, Delete
+                        </button>
+                    </form>
+                </div>
+
+            </div>
         </div>
     </div>
-</div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<script src="/js/reservation-modal.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/reservation-modal.js"></script>
