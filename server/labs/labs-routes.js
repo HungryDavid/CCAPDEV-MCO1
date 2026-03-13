@@ -6,6 +6,8 @@ const { authorize, ensureAuthenticated } = require('../middleware/auth-middlewar
 router.get('/slots-availability', controller.getAllAvailableLabs);
 router.get("/:labName/availability", controller.getSeatStatus);
 router.post('/slots-availability/:labName', controller.getLabSeats);
+
+
 router.use(ensureAuthenticated);
 authorize('technician');
 router.post('/manage/create', controller.createLab);
