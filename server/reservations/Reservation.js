@@ -90,19 +90,19 @@ reservationSchema.statics.checkSeatAvailabilityConflict = async function (labora
   }
 };
 
-reservationSchema.statics.createReservation = async function ({ studentId, anonymous, laboratory, date, slots }) {
+reservationSchema.statics.createReservation = async function ({studentId, isAnonymous, laboratory, date, slots }) {
   if (!laboratory || !date || !slots || slots.length === 0) {
     throw new CustomError(400, 'BadRequest', "Missing labId, date, or slots.");
   }
   await this.checkUserReservationConflict(studentId, laboratory, date, slots);
   await this.checkSeatAvailabilityConflict(laboratory, date, slots);
-  return this.create({ studentId, anonymous, laboratory, date, slots });
+  return this.create({ studentId, anonymous: isAnonymous, laboratory, date, slots });
 };
 
 /**
  * Update a reservation
  */
-reservationSchema.statics.updateReservationFromCart = async function (reservationId, sessionCart) {
+reservationSchema.statics.updateReservationFromCart = async function (reservationId, sessionCart, isAnonymous) {
   try {
     const reservation = await this.findById(reservationId);
     if (!reservation) {
@@ -133,6 +133,11 @@ reservationSchema.statics.updateReservationFromCart = async function (reservatio
     });
 
     reservation.slots = newSlots;
+
+    if (typeof isAnonymous === 'boolean') {
+      reservation.anonymous = isAnonymous;
+    }
+
     await reservation.save();
 
     return reservation;

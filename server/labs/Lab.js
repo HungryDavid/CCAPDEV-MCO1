@@ -197,21 +197,33 @@ laboratorySchema.statics.getLabSeats = async function(labName, timeSlot, date) {
 
   const seatMap = new Map();
   reservations.forEach(res => {
-    res.slots.forEach(slot => {
-      if (!timeSlot || slot.timeSlot === timeSlot) {
-        seatMap.set(slot.seatNumber.toString(), {
-          user: res.anonymous
-            ? { name: 'Anonymous', id: null, idNumber: null }
-            : { 
-                name: res.studentId?.name || 'Unknown', 
-                id: res.studentId?._id || null,
-                idNumber: res.studentId?.idNumber || null 
-              },
-          status: 'reserved'
-        });
+  res.slots.forEach(slot => {
+    if (!timeSlot || slot.timeSlot === timeSlot) {
+
+      let user;
+
+      if (res.anonymous) {
+        user = {
+          name: 'Anonymous',
+          id: null,
+          idNumber: null
+        };
+      } else {
+        user = {
+          name: res.studentId?.name || 'Unknown',
+          id: res.studentId?._id || null,
+          idNumber: res.studentId?.idNumber || null
+        };
       }
-    });
+
+      seatMap.set(slot.seatNumber.toString(), {
+        user,
+        status: 'reserved'
+      });
+
+    }
   });
+});
 
   const seatStatus = [];
   for (let seat = 1; seat <= lab.capacity; seat++) {
@@ -231,8 +243,8 @@ laboratorySchema.statics.getLabSeats = async function(labName, timeSlot, date) {
       status
     });
   }
-
   return seatStatus;
+  
 };
 
 module.exports = mongoose.model('Laboratory', laboratorySchema);

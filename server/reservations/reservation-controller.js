@@ -6,14 +6,13 @@ const { getTimeSlots, renderErrorPage } = require('../util/helpers');
 
 exports.createReservation = async (req, res) => {
   try {
-    const { studentNumber, selectedLab, selectedDate, labCart } = req.body;
+    const { isAnonymous, studentNumber, selectedLab, selectedDate, labCart } = req.body;
     let studentId = req.session.userId;
 
     if (req.session.role === "technician") {
       studentId = await User.getIdByStudentId(studentNumber);
     }
 
-    const anonymous = false;
     const labId = await Laboratory.getIdByName(selectedLab);
 
     const slots = [];
@@ -32,7 +31,7 @@ exports.createReservation = async (req, res) => {
 
     await Reservation.createReservation({
       studentId,
-      anonymous,
+      isAnonymous,
       laboratory: labId,
       date: selectedDate,
       slots
@@ -76,16 +75,14 @@ exports.getReservationById = async (req, res) => {
 };
 
 exports.updateReservation = async (req, res) => {
-  console.error("INNN");
   try {
-    const { reservationId, sessionCart } = req.body;
+    const { isAnonymous, reservationId, sessionCart } = req.body;
 
-    console.log(req.body);
     if (!reservationId || !sessionCart || Object.keys(sessionCart).length === 0) {
       return res.status(400).json({ message: 'Reservation ID and session cart are required.' });
     }
 
-    const updatedReservation = await Reservation.updateReservationFromCart(reservationId, sessionCart);
+    const updatedReservation = await Reservation.updateReservationFromCart(reservationId, sessionCart, isAnonymous);
 
     const formattedSlots = {};
     updatedReservation.slots.forEach(slot => {
@@ -131,21 +128,18 @@ exports.getReservations = async (req, res) => {
   }
 };
 
-
-
-
-
 exports.deleteReservation = async (req, res) => {
   try {
 
     const { labName, bookingDate, bookingTime, seatNumber } = req.body;
-    const seat = parseInt(seatNumber, 10);
+    let seat;
+    if (seatNumber) {
+      seat = parseInt(seatNumber, 10);
 
-    if (isNaN(seat)) {
-      return res.status(400).send({ error: "Invalid seat number provided." });
+      if (isNaN(seat)) {
+        return res.status(400).send({ error: "Invalid seat number provided." });
+      }
     }
-
-    console.log(labName, bookingDate, bookingTime, seat);
 
     let { id } = req.body;
     if (labName && bookingDate && bookingTime && seat) {
@@ -158,7 +152,12 @@ exports.deleteReservation = async (req, res) => {
     }
 
     await Reservation.deleteReservation(id);
-    res.redirect("/labs/slots-availability");
+
+    if (req.session.role === "technician") {
+      res.redirect("/labs/slots-availability");
+    } else 
+      res.redirect("/reservation");
+    
 
   } catch (err) {
 
