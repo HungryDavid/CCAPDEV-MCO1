@@ -162,8 +162,9 @@ function renderSelectedSeats() {
       if (seat.status === "reserved") {
         seatButton.classList.remove("btn-outline-primary");
         seatButton.classList.add("btn-outline-danger");
-        seatButton.title = seat.user?.name || "Unknown";
-        seatButton.textContent = seat.user?.name || "Unknown";
+        const displayName = seat.user?.name || "Walk-in";
+        seatButton.title = displayName;
+        seatButton.textContent = displayName;
       } else if (seat.status === "available") {
         seatButton.classList.remove("btn-outline-danger");
         seatButton.classList.add("btn-outline-primary");
@@ -219,7 +220,7 @@ function renderSelectedSeats() {
       const response = await fetch(`/reservation/create`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({isAnonymous: isAnonymousCheckbox.checked, studentNumber, reservationId, selectedLab, selectedDate: bookingDateElement?.value, labCart }),
+        body: JSON.stringify({isAnonymous: isAnonymousCheckbox.checked, userId:studentNumber, reservationId, selectedLab, selectedDate: bookingDateElement?.value, labCart }),
       });
 
       const result = await response.json();

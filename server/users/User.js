@@ -237,5 +237,20 @@ userSchema.statics.readUserSafeAndPublic = async function (identifier) {
     .select('-password');
 };
 
+userSchema.statics.getIdByStudentId = async function (studentId) {
+  if (!studentId) return null;
+
+  const user = await this.findById(studentId);
+  
+  if (user) return user;
+
+  // If not found, return a temporary object so the controller doesn't crash
+  return { 
+    _id: studentId, 
+    name: null, 
+    isWalkIn: true 
+  };
+};
+
 const User = mongoose.model('User', userSchema);
 module.exports = User; // Export the User model 

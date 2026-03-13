@@ -42,7 +42,11 @@
       data-booking-time="{{../selectedTime}}" data-student-id="{{this.user.idNumber}}" title="{{#if (eq this.status "
       reserved")}}{{this.user.name}}{{else}}Available{{/if}}">
       {{#if (eq this.status "reserved")}}
-      {{this.user.name}}
+      {{#if this.user.name}}
+          {{this.user.name}}
+        {{else}}
+          Walk-in
+        {{/if}}
       {{else}}
       {{this.seatNumber}}
       {{/if}}

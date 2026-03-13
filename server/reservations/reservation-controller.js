@@ -10,7 +10,12 @@ exports.createReservation = async (req, res) => {
     let studentId = req.session.userId;
 
     if (req.session.role === "technician") {
-      studentId = await User.getIdByStudentId(userId);
+      if (userId) {
+        const studentData = await User.getIdByStudentId(userId);
+        studentId = studentData._id; // This works for real users AND walk-ins now
+      } else {
+        return res.status(400).json({ message: "Please provide a Student ID." });
+      }
     }
 
     const labId = await Laboratory.getIdByName(selectedLab);

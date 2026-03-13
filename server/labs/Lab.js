@@ -258,16 +258,27 @@ laboratorySchema.statics.getLabSeats = async function(labName, timeSlot, date) {
 
     // 4. Build seat map
     const seatMap = new Map();
-    reservations.forEach(res => {
-      res.seatNumbers.forEach(seat => {
-        seatMap.set(seat.toString(), { // normalize
-          user: res.anonymous
-            ? { name: 'Anonymous', id: null }
-            : { name: res.studentId?.name || 'Unknown', id: res.studentId?._id || null },
-          status: 'reserved'
-        });
-      });
+reservations.forEach(res => {
+  res.seatNumbers.forEach(seat => {
+    // If it's not anonymous, check if we have a real user or just a walk-in ID string
+    let displayName = 'Unknown';
+    if (res.anonymous) {
+      displayName = 'Anonymous';
+    } else if (res.studentId && res.studentId.name) {
+      displayName = res.studentId.name; // Real user name
+    } else {
+      displayName = res.userId || 'Walk-in Student'; // Fallback to the ID string or generic text
+    }
+
+    seatMap.set(seat.toString(), {
+      user: { 
+        name: displayName, 
+        id: res.userId || res.studentId?._id || null 
+      },
+      status: 'reserved'
     });
+  });
+});
 
     // 5. Build seat status array
     const seatStatus = [];
