@@ -147,7 +147,7 @@ reservationSchema.statics.checkSeatAvailabilityConflict = async function (labId,
   }
 };
 
-reservationSchema.statics.createReservation = async function ({ userId, anonymous, labId, reservationDate, timeSlots, seatNumbers }) {
+reservationSchema.statics.createReservation = async function ({ userId, anonymous, labId, reservationDate, timeSlots, seatNumbers, walkInStudent }) {
   // Validate input data directly within the model
   try {
 
@@ -164,7 +164,7 @@ reservationSchema.statics.createReservation = async function ({ userId, anonymou
     // Then, check for any seat availability conflicts
     await this.checkSeatAvailabilityConflict(labId, reservationDate, timeSlots, seatNumbers);
     // If no conflicts, proceed with creating the reservation
-    return this.create({ userId, anonymous, labId, reservationDate, timeSlots, seatNumbers });
+    return this.create({ userId, anonymous, labId, reservationDate, timeSlots, seatNumbers, walkInStudent });
   } catch (err) {
     console.log(err);
     if (err instanceof CustomError) {

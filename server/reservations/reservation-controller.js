@@ -40,7 +40,8 @@ exports.createReservation = async (req, res) => {
       labId: labId,              
       reservationDate: selectedDate, 
       timeSlots: slots.map(s => s.timeSlot), 
-      seatNumbers: slots.map(s => s.seatNumber) 
+      seatNumbers: slots.map(s => s.seatNumber),
+      walkInStudent: req.session.role === "technician" ? `Walk-in: ID ${studentId}` : null
     });
 
     res.status(200).json({
