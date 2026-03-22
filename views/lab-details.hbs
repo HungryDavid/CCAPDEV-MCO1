@@ -1,110 +1,122 @@
-<form id="timeSelectForm" method="POST" action="/labs/slots-availability/{{lab.name}}">
-  <div class="container mt-4">
-    {{#if reservation.laboratory.name}}
-    <div class="d-flex align-items-center my-3">
-      <strong class="me-2">Reservation ID:</strong>
-      <input type="text" name="reservationId" id="reservationId" value="{{reservation._id}}" readonly disabled required
-        class="form-control" style="width: fit-content;">
-    </div> {{/if}}
-
-    <p class="d-flex align-items-center">
-      <strong class="me-2">Date:</strong>
-      <input type="text" value="{{selectedDate}}" class="form-control w-auto" readonly disabled>
-      <input type="hidden" name="bookingDate" id="bookingDate" value="{{selectedDate}}">
-    </p>
-
-    <input type="hidden" name="labName" id="labName" value="{{lab.name}}">
-
-    <div class="row mb-3 align-items-center">
-      <div class="col-auto">
-        <strong><label class="form-label mb-0" for="bookingTime">Select Time:</label></strong>
+<div class="px-4">
+  <div id="timeSelectContainer">
+    <div class="container mt-4">
+      {{#if reservationId}}
+      <div class="d-flex align-items-center my-3">
+        <strong class="me-2">Reservation ID:</strong>
+        <input type="text" id="reservationId" value="{{reservationId}}" readonly class="form-control"
+          style="width: fit-content;">
       </div>
-      <div class="col-auto">
-        <select class="form-select" name="bookingTime" id="bookingTime">
-          {{#each timeSlotsArray}}
-          <option value="{{this}}" {{#if (eq this ../selectedTime)}}selected{{/if}}>
-            {{this}}
-          </option>
-          {{/each}}
-        </select>
-      </div>
-    </div>
-    <input type="hidden" name="seatNumber" id="seatNumber" />
-    <input type="hidden" name="cartSession" id="cartSession" />
-</form>
-
-<!-- SEAT GRID -->
-<div class="row" id="seatGrid">
-  {{#each labSeats}}
-  <div class="col-md-2 col-3 mb-2">
-    <button class="btn seat-btn w-100 {{#if (eq this.status "
-      reserved")}}btn-outline-danger{{else}}btn-outline-primary{{/if}}" data-seat="{{this.seatNumber}}"
-      data-booking-time="{{../selectedTime}}" data-student-id="{{this.user.idNumber}}" title="{{#if (eq this.status "
-      reserved")}}{{this.user.name}}{{else}}Available{{/if}}">
-      {{#if (eq this.status "reserved")}}
-      {{this.user.name}}
-      {{else}}
-      {{this.seatNumber}}
       {{/if}}
-    </button>
+
+      <p class="d-flex align-items-center">
+        <strong class="me-2">Date:</strong>
+        <input type="text" value="{{bookingDate}}" class="form-control w-auto" readonly>
+        <input type="hidden" id="bookingDate" value="{{bookingDate}}">
+      </p>
+
+      <input type="hidden" id="labName" value="{{lab.name}}">
+      <input type="hidden" id="seatNumber">
+      <input type="hidden" id="cartSession" value="{{cartSession}}">
+
+      <div class="row mb-3 align-items-center">
+        <div class="col-auto">
+          <strong>
+            <label class="form-label mb-0" for="bookingTime">Select Time:</label>
+          </strong>
+        </div>
+
+        <div class="col-auto">
+          <select class="form-select" id="bookingTime">
+            {{#each timeSlotsArray}}
+            <option value="{{this}}" {{#if (eq this ../bookingTime)}}selected{{/if}}>
+              {{minutesToTime this}}
+            </option>
+            {{/each}}
+          </select>
+        </div>
+      </div>
+
+    </div>
   </div>
-  {{/each}}
+
+  <!-- SEAT GRID -->
+
+  <div class="row" id="seatGrid">
+    {{#each labSeats}}
+    <div class="col-md-2 col-3 mb-2">
+      <button type="button" class="btn seat-btn w-100 {{#if (eq this.status "
+        reserved")}}btn-outline-danger{{else}}btn-outline-primary{{/if}}" data-seat="{{this.seatNumber}}"
+        data-booking-time="{{../bookingTime}}" data-student-id="{{this.studentIdNumber}}">
+
+        {{#if (eq this.status "Reserved")}}
+        {{this.studentName}}
+        {{else}}
+        {{this.seatNumber}}
+        {{/if}}
+
+      </button>
+
+    </div>
+    {{/each}}
+  </div>
+
+  {{#if (isLoggedIn user)}}
+
+  <div class="mt-4" id="selectedSeatsTableContainer">
+
+    <h5>Selected Seats:</h5>
+
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Time</th>
+          <th>Seat Number</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+
+      <tbody id="selectedSeatsTableBody"></tbody>
+
+    </table>
+
+    <div class="form-check mb-3">
+      <input class="form-check-input" type="checkbox" id="isAnonymous" value="true">
+      <label class="form-check-label" for="isAnonymous">
+        Reserve Anonymously
+      </label>
+    </div>
+
+    <div class="text-center mt-3">
+
+      {{#if reservationId}}
+      <button id="updateButton" type="button" class="btn btn-primary">
+        Update Reservation
+      </button>
+      {{else}}
+      <button id="confirmReservationBtn" type="button" class="btn btn-success">
+        Create Reservation
+      </button>
+      {{/if}}
+
+      {{#if (eq user.role 'technician')}}
+      <button id="editReservationBtn" type="button" class="btn btn-warning ms-2">
+        Edit
+      </button>
+
+      <button type="button" class="btn btn-danger" id="deleteReservationBtn">
+        Delete
+      </button>
+      {{/if}}
+
+    </div>
+
+  </div>
+
+  {{/if}}
+
+  <input type="hidden" id="isTechnician" value='{{#isTechnician user}}true{{/isTechnician}}'>
+  <input type="hidden" id="cartSessionInput" value='{{cartSession}}'>
 </div>
-
-{{#if isLoggedIn}}
-<!-- Table for Selected Seats -->
-<div class="mt-4" id="selectedSeatsTableContainer">
-  <h5>Selected Seats:</h5>
-  <table class="table">
-    <thead>
-      <tr>
-        <th>Time</th>
-        <th>Seat Number</th>
-        <th>Status</th>
-        <th>Action</th>
-      </tr>
-    </thead>
-    <tbody id="selectedSeatsTableBody">
-
-    </tbody>
-  </table>
-
-  <div class="form-check mb-3">
-    <input class="form-check-input" type="checkbox" id="isAnonymous" name="isAnonymous" value="true">
-    <label class="form-check-label" for="isAnonymous">
-      Reserve Anonymously
-    </label>
-  </div>
-
-  <div class="text-center mt-3">
-    {{#if reservation}}
-    <button id="updateButton" class="btn btn-primary">
-      Update Reservation
-    </button>
-    {{else}}
-    <button id="confirmReservationBtn" class="btn btn-success">
-      Confirm Reservation
-    </button>
-    {{/if}}
-
-    {{#if isTechnician}}
-    <button id="editReservationBtn" class="btn btn-warning ms-2">
-      Edit
-    </button>
-
-    <form id="deleteReservationForm" method="POST" action="/reservation/delete" class="d-inline">
-      <input type="hidden" name="labName" value="{{lab.name}}" />
-      <input type="hidden" name="bookingDate" value="{{selectedDate}}" />
-      <input type="hidden" name="bookingTime" value="{{selectedTime}}" />
-      <input type="hidden" name="seatNumber" id="deleteSeatNumber" />
-      <input type="hidden" name="seatNumber" id="seatNumber" />
-      <button type="submit" class="btn btn-danger" id="deleteReservationBtn">Delete</button>
-    </form>
-    {{/if}}
-  </div>
-</div>
-{{/if}}
-
-<input type="hidden" id="isTechnician" value='{{isTechnician}}' />
-<input type="hidden" id="cartSessionInput" value='{{cartSession}}' />
 <script src="/js/lab-details.js"></script>

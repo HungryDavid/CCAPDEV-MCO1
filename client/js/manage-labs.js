@@ -1,51 +1,70 @@
-function to24HourFormat(timeStr) {
-    // Converts "2:30 PM" -> "14:30"
-    const [time, modifier] = timeStr.split(' ');
-    let [hours, minutes] = time.split(':').map(Number);
-
-    if (modifier === 'PM' && hours !== 12) {
-        hours += 12;
-    } else if (modifier === 'AM' && hours === 12) {
-        hours = 0;
-    }
-
-    // Pad with 0
-    const hh = String(hours).padStart(2, '0');
-    const mm = String(minutes).padStart(2, '0');
-
-    return `${hh}:${mm}`;
+function minutesToTimeString(totalMinutes) {
+    if (isNaN(totalMinutes)) return "00:00";
+    const hours = Math.floor(totalMinutes / 60).toString().padStart(2, '0');
+    const minutes = (totalMinutes % 60).toString().padStart(2, '0');
+    return `${hours}:${minutes}`;
 }
 
 document.addEventListener('DOMContentLoaded', function () {
     const editModal = document.getElementById('editLabModal');
 
-    editModal.addEventListener('show.bs.modal', function (event) {
-        const button = event.relatedTarget;
-        const row = button.closest('tr');
+    if (editModal) {
+        editModal.addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget;
+            
+            const id = button.getAttribute('data-id');
+            const bldg = button.getAttribute('data-bldg');
+            const roomNumber = button.getAttribute('data-roomnumber');
+            const open = parseInt(button.getAttribute('data-open'));
+            const close = parseInt(button.getAttribute('data-close'));
+            const capacity = button.getAttribute('data-capacity');
 
-        const name = row.querySelector('td:nth-child(1)').textContent.trim();
-        let openTime = row.querySelector('td:nth-child(2)').textContent.trim();
-        let closeTime = row.querySelector('td:nth-child(3)').textContent.trim();
-        const capacity = row.querySelector('td:nth-child(4)').textContent.trim();
-        const id = button.getAttribute('data-id');
+            const form = editModal.querySelector('#editLabForm');
+            if (form) form.action = `/labs/manage/${id}/edit`;
 
-        // Convert times to 24-hour
-        openTime = to24HourFormat(openTime);
-        closeTime = to24HourFormat(closeTime);
+            const roomField = editModal.querySelector('input[name="roomNumber"]');
+            if (roomField) roomField.value = roomNumber || '';
 
-        document.getElementById('editLabForm').action = "/labs/manage/"+id+"/edit";
-        document.getElementById('editName').value = name;
-        document.getElementById('editOpenTime').value = openTime;
-        document.getElementById('editCloseTime').value = closeTime;
-        document.getElementById('editCapacity').value = capacity;
-    });
+            const bldgField = editModal.querySelector('select[name="buildingAbbreviation"]');
+            if (bldgField) bldgField.value = bldg || '';
+
+            const openField = editModal.querySelector('#editOpenTime');
+            if (openField) openField.value = minutesToTimeString(open);
+
+            const closeField = editModal.querySelector('#editCloseTime');
+            if (closeField) closeField.value = minutesToTimeString(close);
+
+            const capField = editModal.querySelector('#editCapacity');
+            if (capField) capField.value = capacity || '';
+        });
+    }
 
     const deleteModal = document.getElementById('deleteLabModal');
-    const deleteForm = document.getElementById('deleteLabForm');
+    if (deleteModal) {
+        deleteModal.addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget;
+            const id = button.getAttribute('data-id');
+            const deleteForm = deleteModal.querySelector('#deleteLabForm');
+            if (deleteForm) deleteForm.action = `/labs/manage/${id}/delete`;
+        });
+    }
 
-    deleteModal.addEventListener('show.bs.modal', function (event) {
-        const button = event.relatedTarget;
-        const id = button.getAttribute('data-id');
-        deleteForm.action = "/labs/manage/"+ id+"/delete";
+    const forms = ['#createLabModal form', '#editLabForm'];
+    forms.forEach(selector => {
+        const form = document.querySelector(selector);
+        if (!form) return;
+
+        form.addEventListener('submit', (e) => {
+            const openInput = form.querySelector('input[name="openTime"]');
+            const closeInput = form.querySelector('input[name="closeTime"]');
+            if (openInput.value && closeInput.value) {
+                if (openInput.value >= closeInput.value) {
+                    e.preventDefault();
+                    alert("Error: Opening time must be earlier than closing time.");
+                    closeInput.focus();
+                }
+            }
+        });
     });
+
 });

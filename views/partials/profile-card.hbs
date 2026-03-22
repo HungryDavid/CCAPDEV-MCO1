@@ -84,18 +84,19 @@
               <th scope="col" class="fw-semibold">Time</th>
               <th scope="col" class="fw-semibold">Laboratory</th>
               <th scope="col" class="fw-semibold">Seat#</th>
-                  </tr>
+            </tr>
           </thead>
           <tbody>
-
             {{#if reservations}}
             {{#each reservations}}
+            {{#each this.slots}}
             <tr>
-              <td>{{this.date}}</td>
-              <td>{{this.time}}</td>
-              <td>{{this.laboratory}}</td>
-              <td>{{this.seats}}</td>
+              <td>{{../this.date}}</td>
+              <td>{{minutesToTime this.startTime}}-{{minutesToTime this.endTime}}</td>
+              <td>{{../this.laboratory.name}}</td>
+              <td>{{this.seatNumber}}</td>
             </tr>
+            {{/each}}
             {{/each}}
             {{else}}
             {{! Fallback }}
@@ -151,6 +152,5 @@
     </div>
   </div>
 </div>
-
 
 <script src="/js/profile.js"></script>

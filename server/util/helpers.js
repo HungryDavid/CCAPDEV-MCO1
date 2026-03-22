@@ -67,6 +67,11 @@ module.exports = {
         });
     },
 
+    // FORMAT DATE
+    formatDate: function (date) {
+        return moment(date).format('YYYY-MM-DD HH:mm');
+    },
+
     // NAV LINK CLASS
     navLinkClass: function (currentPath, targetPath) {
         return currentPath === targetPath
@@ -74,59 +79,53 @@ module.exports = {
             : 'text-black';
     },
 
+    // Convert time string "HH:mm" to total minutes
+    timeToMinutes: function (timeStr) {
+        if (!timeStr) return 0;
+
+        const [hours, minutes] = timeStr.split(':').map(Number);
+        return (hours * 60) + minutes;
+    },
+
+    // Convert total minutes back to "HH:mm" format
+    minutesToTime: function (totalMinutes) {
+        const total = Math.abs(Math.round(totalMinutes));
+
+        const hours = Math.floor(total / 60) % 24;
+        const minutes = total % 60;
+
+        const formattedHours = String(hours).padStart(2, '0');
+        const formattedMinutes = String(minutes).padStart(2, '0');
+
+        return `${formattedHours}:${formattedMinutes}`;
+    },
+
     // TIME SLOTS HELPER
-    getTimeSlots: function (intervalMinutes = 30, start = "19:30", end = "07:15", date = null) {
-    const slots = [];
+    getTimeSlots: function (selectedDate, start, end, interval = 30) {
+        const slots = [];
+        const dateToCheck = new Date(selectedDate);
+        const today = new Date();
+        const isToday = dateToCheck.toDateString() === today.toDateString();
+        const nowInMinutes = (today.getHours() * 60) + today.getMinutes();
 
-    const [startH, startM] = start.split(":").map(Number);
-    const [endH, endM] = end.split(":").map(Number);
-
-    let startTime, endTime;
-
-    const localDate = new Date().toLocaleDateString('en-CA');
-
-    if (date) {
-        startTime = new Date(date);
-        endTime = new Date(date);
-    } else {
-        startTime = new Date(localDate);
-        endTime = new Date(localDate);
-    }
-
-    startTime.setHours(startH, startM, 0, 0);
-    endTime.setHours(Math.min(endH, 23), Math.min(endM, 59), 0, 0);
-
-    if (startTime > endTime) {
-        endTime.setDate(endTime.getDate() + 1);
-    }
-
-    const now = new Date();
-    const isToday = !date || date === localDate;
-
-    let slotTime = new Date(startTime);
-
-    while (slotTime <= endTime) {
-
-        const slotEnd = new Date(slotTime);
-        slotEnd.setMinutes(slotEnd.getMinutes() + intervalMinutes);
-
-        // Skip only if the whole slot already finished
-        if (isToday && now >= slotEnd) {
-            slotTime.setMinutes(slotTime.getMinutes() + intervalMinutes);
-            continue;
+        let current = Math.ceil(start / interval) * interval;
+        while (current + interval <= end) {
+            if (!isToday || (current + interval > nowInMinutes)) {
+                slots.push(current);
+            }
+            current += interval;
         }
 
-        const formatted = slotTime.toLocaleTimeString("en-GB", {
-            hour: "2-digit",
-            minute: "2-digit",
-            hour12: false
-        });
+        return slots;
+    },
 
-        slots.push(formatted);
+    // CHECK IF LOGGED IN
+    isLoggedIn: function (user) {
+        return user && user.role;
+    },
 
-        slotTime.setMinutes(slotTime.getMinutes() + intervalMinutes);
+    isTechnician: function (user) {
+        // Make sure 'technician' matches your database string exactly
+        return user && user.role === 'technician';
     }
-
-    return slots;
-}
 };

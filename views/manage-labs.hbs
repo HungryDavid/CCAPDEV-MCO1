@@ -25,14 +25,16 @@
                 {{#each labs}}
                 <tr class="text-center">
                     <td>{{name}}</td>
-                    <td>{{openTime}}</td>
-                    <td>{{closeTime}}</td>
+                    <td>{{minutesToTime openTime}}</td>
+                    <td>{{minutesToTime closeTime}}</td>
                     <td>{{capacity}}</td>
                     <td>
                         <div class="d-flex justify-content-center gap-2">
                             <!-- Edit Button -->
-                            <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal"
-                                data-bs-target="#editLabModal" data-id="{{_id}}">
+                            <button class="btn btn-sm btn-outline-primary edit-lab-btn" data-bs-toggle="modal"
+                                data-bs-target="#editLabModal" data-id="{{_id}}" data-name="{{name}}" data-roomNumber="{{roomNumber}}"
+                                data-bldg="{{bldg}}" data-open="{{openTime}}" data-close="{{closeTime}}"
+                                data-capacity="{{capacity}}">
                                 Edit
                             </button>
 
@@ -74,7 +76,19 @@
 
                     <div class="mb-3">
                         <label class="form-label">Lab Name</label>
-                        <input type="text" name="name" class="form-control" required>
+                        <div class="row g-2">
+                            <div class="col-md-3">
+                                <select name="buildingAbbreviation" class="form-select" required>
+                                    <option value="" selected disabled>Bldg</option>
+                                    {{#each bldgAbbreviations}}
+                                    <option value="{{this}}">{{this}}</option>
+                                    {{/each}}
+                                </select>
+                            </div>
+                            <div class="col-md-9">
+                                <input type="text" name="roomNumber" class="form-control" placeholder="Room Number" required>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="mb-3">
@@ -119,7 +133,19 @@
 
                     <div class="mb-3">
                         <label class="form-label">Lab Name</label>
-                        <input type="text" name="name" id="editName" class="form-control" required>
+                        <div class="row g-2">
+                            <div class="col-md-3">
+                                <select name="buildingAbbreviation" class="form-select" required>
+                                    <option value="" selected disabled>Bldg</option>
+                                    {{#each bldgAbbreviations}}
+                                    <option value="{{this}}">{{this}}</option>
+                                    {{/each}}
+                                </select>
+                            </div>
+                            <div class="col-md-9">
+                                <input type="text" name="roomNumber" class="form-control" placeholder="Room Number" required>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="mb-3">

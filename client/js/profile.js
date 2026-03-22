@@ -13,12 +13,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
     if (editBtn) {
         editBtn.addEventListener('click', function () {
-            // Toggle Visibility
             editBtn.classList.add('d-none');
             saveBtn.classList.remove('d-none');
             saveBtn.classList.add('d-flex');
 
-            // Enable Bio Editing
             bioText.removeAttribute('readonly');
             bioText.classList.remove('border-0', 'bg-transparent');
             bioText.focus();
@@ -27,8 +25,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
 
         
-
-        // Sync Textarea to Hidden Input before Submit
         if (profileForm) {
             profileForm.addEventListener('submit', function () {
                 bioHidden.value = bioText.value;

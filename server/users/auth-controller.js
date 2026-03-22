@@ -22,7 +22,7 @@ const getRegisterPage = (req, res) => {
     });
 };
 
-//LOGINS USER
+//logins a user by checking if the provided email/ID and password match a record in the database
 const loginUser = async (req, res) => {
     try {
         const { identifier, password, rememberMe } = req.body;
@@ -35,7 +35,6 @@ const loginUser = async (req, res) => {
             req.session.cookie.maxAge = 1000 * 60 * 60 * 24 * 21; // 21 Days
             req.session.touch();
         } 
-
         
         res.redirect('/labs/slots-availability');
     } catch (error) {
@@ -44,7 +43,7 @@ const loginUser = async (req, res) => {
     }
 };
 
-//LOGOUTS USER
+//logs out a user by destroying their session and clearing the cookie
 const logoutUser = (req, res) => {
 
     if (!req.session) {
@@ -67,14 +66,13 @@ const logoutUser = (req, res) => {
     });
 };
 
-//REGISTERS USER
-const registerUser = async (req, res, next) => {
+//registers user
+const registerUser = async (req, res) => {
     try {
-        const { email, idNumber, password, rememberMe } = req.body;
-        await User.createUser({ email, idNumber, password, rememberMe });
+        const { email, idNumber, password} = req.body;
+        await User.createUser(email, idNumber, password );
         res.redirect('/auth/login');
     } catch (error) {
-        console.log(error);
         req.flash('error', error.message);
         return res.redirect('/auth/register');
     }

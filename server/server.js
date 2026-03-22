@@ -64,6 +64,7 @@ app.use(session({
   }
 }));
 
+
 // Use flash messages for storing temporary messages (like success or error)
 app.use(flash());
 
@@ -77,16 +78,21 @@ app.use((req, res, next) => {
 
 // Middleware for loading user info into the response locals for easy access in views
 app.use(async (req, res, next) => {
+  res.locals.user = null;
+
   if (req.session.userId) {
     const user = await User.findById(req.session.userId).lean();
-    res.locals.user = {
-      userId: user._id,
-      email: user.email,
-      role: user.role
-    };
+    if (user) {
+      res.locals.user = {
+        userId: user._id,
+        email: user.email,
+        role: user.role
+      };
+    }
   }
   next();
 });
+
 
 // Route definitions (Protected routes use authentication middleware)
 app.use('/reservation', ensureAuthenticated, require('./reservations/reservation-routes'));

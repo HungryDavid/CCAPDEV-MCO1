@@ -11,38 +11,37 @@
                 {{#each reservations}}
                 <div class="card mb-3 shadow-sm border-0 rounded-3">
                     <div class="card-body p-3">
-                        <h6 class="fw-bold text-primary mb-2">#{{this.reservationId}}</h6>
+                        <h6 class="fw-bold text-primary mb-2">#{{this._id}}</h6>
                         <div class="mb-2">
                             <small class="text-muted d-block">
-                                DateTime Requested: {{this.dateTimeCreated}}
+                                DateTime Requested: {{formatDate this.createdAt}}
                             </small>
                             <small class="text-muted d-block">
-                                Booking Date: {{this.date}}
+                                Booking Date: {{formatDate this.date}}
                             </small>
                             <small class="text-muted d-block">
-                                Booking Time: {{this.time}}
+                                Laboratory: {{this.laboratory.name}}
                             </small>
                             <small class="text-muted d-block">
-                                Lab & Seat#: {{this.laboratory}} #{{this.seats}}
+                                Booking Time: {{#each this.slots}}{{minutesToTime this.startTime}}-{{minutesToTime
+                                this.endTime}}, {{/each}}
+                            </small>
+                            <small class="text-muted d-block">
+                                Seat: {{#each this.slots}}#{{this.seatNumber}}, {{/each}}
                             </small>
                         </div>
                         <div class="d-flex gap-2 mt-3">
-                            <form method="POST" action="/labs/slots-availability/{{this.laboratory}}" class="flex-fill">
-                                <input type="hidden" name="reservationId" value="{{this.reservationId}}" />
-                                <button type="submit"
-                                    class="btn btn-sm btn-outline-primary rounded-2 w-100 d-flex align-items-center justify-content-center gap-1"
-                                    title="Edit reservation" aria-label="Edit reservation for {{this.laboratory}}">
-                                    <i class="bi bi-pencil-square"></i>
-                                    <span>Edit</span>
-                                </button>
+                            <form method="GET" action="/reservation/{{this._id}}/update" class="flex-fill">
+                            <button type="submit" class="btn btn-outline-primary w-100 rounded-3 d-flex align-items-center justify-content-center gap-2">
+                                <span>Edit</span>
+                            </button>
                             </form>
                             <button type="button"
                                 class="btn btn-sm btn-outline-danger rounded-2 flex-fill d-flex align-items-center justify-content-center gap-1"
-                                data-bs-toggle="modal" data-bs-target="#deleteReservationModal"
-                                data-id="{{this.reservationId}}" data-laboratory="{{this.laboratory}}"
-                                data-date="{{this.date}}" data-time="{{this.time}}" title="Delete reservation"
+                                data-bs-toggle="modal" data-bs-target="#deleteReservationModal" data-id="{{this._id}}"
+                                data-laboratory="{{this.laboratory}}" data-date="{{this.date}}"
+                                data-time="{{this.time}}" title="Delete reservation"
                                 aria-label="Delete reservation for {{this.laboratory}}">
-                                <i class="bi bi-trash3"></i>
                                 <span>Delete</span>
                             </button>
                         </div>
@@ -53,59 +52,60 @@
                 <p>No Current Reservations</p>
                 {{/if}}
             </div>
-            <!--Desktop-->
-
-            <div class="d-none d-md-block table-responsive rounded-3 shadow-sm">
-                <table class="table table-bordered table-hover align-middle mb-0">
-                    <thead class="table-success">
-                        <tr>
-                            <th scope="col" class="fw-semibold">Reservation ID</th>
-                            <th scope="col" class="fw-semibold">DateTime Requested</th>
-                            <th scope="col" class="fw-semibold">Date</th>
-                            <th scope="col" class="fw-semibold">Time</th>
-                            <th scope="col" class="fw-semibold">Laboratory</th>
-                            <th scope="col" class="fw-semibold">Seat#</th>
-                            <th scope="col" class="fw-semibold text-center">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {{#if reservations}}
-                        {{#each reservations}}
-                        <tr>
-                            <td>{{this.reservationId}}</td>
-                            <td>{{this.dateTimeCreated}}</td>
-                            <td>{{this.date}}</td>
-                            <td>{{this.time}}</td>
-                            <td>{{this.laboratory}}</td>
-                            <td>{{this.seats}}</td>
-                            <td class="text-center">
-                                <div class="d-flex justify-content-center gap-2">
-                                    <form method="POST" action="/labs/slots-availability/{{this.laboratory}}">
-                                        <input type="hidden" name="reservationId" value="{{this.reservationId}}" />
-                                        <button type="submit" class="btn btn-sm btn-outline-primary">
-                                            Edit
-                                        </button>
-                                    </form>
-
-                                    <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal"
-                                        data-bs-target="#deleteReservationModal" data-id="{{this.reservationId}}"
-                                        data-laboratory="{{this.laboratory}}" data-date="{{this.date}}"
-                                        data-time="{{this.time}}">
-                                        Delete
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                        {{/each}}
-                        {{else}}
-                        No Current Reservations
-                        {{/if}}
-                    </tbody>
-                </table>
-            </div>
-
         </div>
 
+        <!--Desktop Current Reservation-->
+        <div class="d-none d-md-block table-responsive rounded-3 shadow-sm">
+            <table class="table table-bordered table-hover align-middle mb-0">
+                <thead class="table-success">
+                    <tr>
+                        <th scope="col" class="fw-semibold">Reservation ID</th>
+                        <th scope="col" class="fw-semibold">DateTime Requested</th>
+                        <th scope="col" class="fw-semibold">Date</th>
+                        <th scope="col" class="fw-semibold">Time</th>
+                        <th scope="col" class="fw-semibold">Laboratory</th>
+                        <th scope="col" class="fw-semibold">Seat#</th>
+                        <th scope="col" class="fw-semibold text-center">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#if reservations}}
+                    {{#each reservations}}
+                    <tr>
+                        <td>{{this._id}}</td>
+                        <td>{{formatDate this.createdAt}}</td>
+                        <td>{{this.date}}</td>
+                        <td>{{#each this.slots}}{{minutesToTime this.startTime}}-{{minutesToTime
+                            this.endTime}}<br>{{/each}}</td>
+                        <td>{{this.laboratory.name}}</td>
+                        <td>{{#each this.slots}}#{{this.seatNumber}}<br>{{/each}}</td>
+                        <td class="text-center">
+                            <div class="d-flex justify-content-center gap-2">
+                                <form method="GET" action="/reservation/{{this._id}}/update">
+                                    <button type="submit" class="btn btn-sm btn-outline-primary">
+                                        Edit
+                                    </button>
+                                </form>
+
+                                <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal"
+                                    data-bs-target="#deleteReservationModal" data-id="{{this._id}}"
+                                    data-laboratory="{{this.laboratory}}" data-date="{{this.date}}"
+                                    data-time="{{this.time}}">
+                                    Delete
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {{/each}}
+                    {{else}}
+                    No Current Reservations
+                    {{/if}}
+                </tbody>
+            </table>
+        </div>
+
+
+        <!--Mobile Past Reservation-->
         <div class="col-12 col-sm-11 col-md-10 col-lg-8">
 
             <h1 class="fw-semibold fs-4 text-center pb-3 pt-2">
@@ -118,20 +118,24 @@
                 <div class="card mb-3 shadow-sm border-0 rounded-3">
                     <div class="card-body p-3">
 
-                        <h6 class="fw-bold text-secondary mb-2">#{{this.reservationId}}</h6>
+                        <h6 class="fw-bold text-secondary mb-2">#{{this._id}}</h6>
 
                         <div class="mb-2">
                             <small class="text-muted d-block">
-                                DateTime Requested: {{this.dateTimeCreated}}
+                                DateTime Requested: {{formatDate this.createdAt}}
                             </small>
                             <small class="text-muted d-block">
                                 Booking Date: {{this.date}}
                             </small>
                             <small class="text-muted d-block">
-                                Booking Time: {{this.time}}
+                                Laboratory: {{this.laboratory.name}}
                             </small>
                             <small class="text-muted d-block">
-                                Lab & Seat#: {{this.laboratory}} #{{this.seats}}
+                                Booking Time: {{#each this.slots}}{{minutesToTime this.startTime}}-{{minutesToTime
+                                this.endTime}}, {{/each}}
+                            </small>
+                            <small class="text-muted d-block">
+                                Seat: {{#each this.slots}}#{{this.seatNumber}}, {{/each}}
                             </small>
                         </div>
 
@@ -150,48 +154,52 @@
             </div>
         </div>
 
+
+        <!--Desktop Past Reservation-->
         <div class="d-none d-md-block table-responsive rounded-3 shadow-sm">
-                <table class="table table-bordered table-hover align-middle mb-0">
-                    <thead class="table-secondary">
-                        <tr>
-                            <th class="fw-semibold">Reservation ID</th>
-                            <th class="fw-semibold">DateTime Requested</th>
-                            <th class="fw-semibold">Date</th>
-                            <th class="fw-semibold">Time</th>
-                            <th class="fw-semibold">Laboratory</th>
-                            <th class="fw-semibold">Seat#</th>
-                            <th class="fw-semibold text-center">Status</th>
-                        </tr>
-                    </thead>
+            <table class="table table-bordered table-hover align-middle mb-0">
+                <thead class="table-secondary">
+                    <tr>
+                        <th class="fw-semibold">Reservation ID</th>
+                        <th class="fw-semibold">DateTime Requested</th>
+                        <th class="fw-semibold">Date</th>
+                        <th class="fw-semibold">Time</th>
+                        <th class="fw-semibold">Laboratory</th>
+                        <th class="fw-semibold">Seat#</th>
+                        <th class="fw-semibold text-center">Status</th>
+                    </tr>
+                </thead>
 
-                    <tbody>
-                        {{#if pastReservations}}
-                        {{#each pastReservations}}
-                        <tr>
-                            <td>{{this.reservationId}}</td>
-                            <td>{{this.dateTimeCreated}}</td>
-                            <td>{{this.date}}</td>
-                            <td>{{this.time}}</td>
-                            <td>{{this.laboratory}}</td>
-                            <td>{{this.seats}}</td>
-                            <td class="text-center">
-                                <span class="badge bg-secondary">
-                                    Completed
-                                </span>
-                            </td>
-                        </tr>
-                        {{/each}}
-                        {{else}}
-                        <tr>
-                            <td colspan="7" class="text-center text-muted">
-                                No Past Reservations
-                            </td>
-                        </tr>
-                        {{/if}}
-                    </tbody>
+                <tbody>
+                    {{#if pastReservations}}
+                    {{#each pastReservations}}
+                    <tr>
+                        <td>{{this._id}}</td>
+                        <td>{{formatDate this.createdAt}}</td>
+                        <td>{{this.date}}</td>
+                        <td>{{#each this.slots}}{{minutesToTime this.startTime}}-{{minutesToTime
+                            this.endTime}}<br>{{/each}}
+                        </td>
+                        <td>{{this.laboratory.name}}</td>
+                        <td>{{#each this.slots}}#{{this.seatNumber}}<br>{{/each}}</td>
+                        <td class="text-center">
+                            <span class="badge bg-secondary">
+                                Completed
+                            </span>
+                        </td>
+                    </tr>
+                    {{/each}}
+                    {{else}}
+                    <tr>
+                        <td colspan="7" class="text-center text-muted">
+                            No Past Reservations
+                        </td>
+                    </tr>
+                    {{/if}}
+                </tbody>
 
-                </table>
-            </div>
+            </table>
+        </div>
 
     </div>
 
@@ -223,7 +231,6 @@
                         class="w-100 order-1 order-sm-2">
                         <input type="hidden" name="id" id="delete-reservation-id" /> <!-- NEW -->
                         <button type="submit" class="btn btn-danger rounded-2 rounded-md-3 w-100">
-                            <i class="bi bi-trash3 me-1"></i>
                             Yes, Delete
                         </button>
                     </form>

@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const validator = require('validator');
+const Reservation = require('../reservations/Reservation'); // adjust path if needed
+const CustomError = require('../util/CustomError');
 
 const userSchema = new mongoose.Schema(
   {
@@ -47,10 +49,6 @@ const userSchema = new mongoose.Schema(
       maxlength: 300,
       default: '',
     },
-    isPrivate: {
-      type: Boolean,
-      default: false,
-    },
     passwordChangedAt: Date,
   },
   {
@@ -60,40 +58,34 @@ const userSchema = new mongoose.Schema(
   }
 );
 
-userSchema.virtual('reservations', {
-  ref: 'Reservation',
-  foreignField: 'User',
-  localField: '_id',
-});
-
 userSchema.pre('save', async function () {
   if (!this.isModified('password')) return;
   this.password = await bcrypt.hash(this.password, 12);
 });
 
+//Compound index to ensure email and ID number uniqueness
 userSchema.index({ email: 1, idNumber: 1 });
 
+//Instance method to check if the provided password matches the stored hashed password
+userSchema.methods.isCorrectPassword = async function (candidatePassword) {
+  return await bcrypt.compare(candidatePassword, this.password);
+};
 
-userSchema.statics.doesUserExist = async function (email, idNumber) {
+//Finds a user by either their email address or their unique ID number
+userSchema.statics.findUserByEmailOrIdNumber = async function (email, idNumber) {
   const user = await this.findOne({
     $or: [{ email }, { idNumber }],
   });
   return user;
 };
 
-userSchema.methods.isCorrectPassword = async function (candidatePassword) {
-  return await bcrypt.compare(candidatePassword, this.password);
-};
-
-
-userSchema.statics.createUser = async function (userData) {
-  const { email, idNumber, password } = userData;
-
+//registers a new user in the database
+userSchema.statics.createUser = async function (email, idNumber, password) {
   if (!email || !idNumber || !password) {
     throw new Error('Please fill in all fields.');
   }
 
-  const exisitingUser = await this.doesUserExist(email, idNumber);
+  const exisitingUser = await this.findUserByEmailOrIdNumber(email, idNumber);
 
   if (exisitingUser) {
     const field = exisitingUser.email === email ? 'Email' : 'ID Number';
@@ -110,62 +102,12 @@ userSchema.statics.createUser = async function (userData) {
     .join(' ');
 
 
-  const newUser = await this.create({
-    ...userData,
-    name,
-    role,
-  });
+  const newUser = await this.create({email, idNumber, password, name, role,});
 
   return newUser;
 };
 
-userSchema.statics.readUserByIdSafe = function (userId) {
-  if (!userId) {
-    throw new Error('User ID is required.');
-  }
-
-  return this.findById(userId).select('-password');
-};
-
-userSchema.statics.readUserByEmailSafe = async function (query) {
-  return await this.find({
-    email: { $regex: query, $options: 'i' }
-  }).select('-password');
-};
-
-userSchema.statics.readUserByEmailWithPassword = async function (email) {
-  if (!email) {
-    throw new Error('Email is required.');
-  }
-
-  return await this.findOne(email).select('+password');
-};
-
-userSchema.methods.updateUser = async function (data, filePath) {
-  if (data.bio) this.bio = data.bio;
-  if (filePath) {
-    this.profilePic = filePath;
-  }
-  return await this.save();
-};
-
-
-userSchema.statics.deleteUser = async function (userId) {
-  if (!userId) {
-    throw new Error('User ID is required.');
-  }
-
-  const user = await this.findById(userId);
-
-  if (!user) {
-    throw new Error('User not found.');
-  }
-
-  await user.deleteOne();
-  return true;
-};
-
-
+//logins a user by checking if the provided email/ID and password match a record in the database
 userSchema.statics.loginUser = async function (identifier, password) {
   if (!identifier || !password) {
     throw new Error('Please provide both email/ID and password');
@@ -176,56 +118,77 @@ userSchema.statics.loginUser = async function (identifier, password) {
     : { idNumber: identifier };
 
   const user = await this.findOne(query).select('+password');
+
   if (!user) {
     throw new Error('Invalid credentials');
   }
 
   const isMatch = await user.isCorrectPassword(password);
+
   if (!isMatch) {
     throw new Error('Invalid credentials');
   }
-
+  
   return user;
 };
 
-
-userSchema.statics.readUserSafeAndPublic = async function (identifier) {
-  if (!identifier) {
-    throw new Error('ID number or email is required.');
+//deletes a user from the database and also deletes all reservations associated with that user
+userSchema.statics.deleteUser = async function (userId) {
+  if (!userId) {
+    throw new CustomError(400, 'Bad Request', 'User ID is required.');
   }
 
-  const baseQuery = {
-    $or: [
-      { email: identifier.toLowerCase() },
-      { idNumber: identifier }
-    ]
-  };
-  const privacyCheck = await this.findOne(baseQuery).select('isPrivate');
-
-  if (!privacyCheck) {
-    throw new Error('User not found.');
-  }
-
-  if (privacyCheck.isPrivate) {
-    return await this.findOne(baseQuery)
-      .select('name profilePic isPrivate');
-  }
-  return await this.findOne(baseQuery)
-    .select('-password');
-};
-
-userSchema.statics.getIdByStudentId = async function (idNumber) {
-  if (!idNumber) {
-    throw new Error('Student ID is required.');
-  }
-
-  const user = await this.findOne({ idNumber }).select('_id');
+  const user = await this.findById(userId);
 
   if (!user) {
-    throw new Error('User not found.');
+    throw new CustomError(404, 'Not Found', 'User not found.');
   }
 
-  return user._id;
+  await Reservation.deleteMany({ studentId: user._id });
+  await this.findOneAndDelete({ _id: user._id });
+  return true;
+};
+
+//fetches a user by their unique ID and excludes sensitive information like password and role
+userSchema.statics.searchUser = async function (identifier) {
+  if (!identifier) {
+    throw new Error('User ID or email is required.');
+  }
+
+  const query = identifier.includes('@')
+    ? { email: identifier.toLowerCase() }
+    : { idNumber: identifier };
+
+  return await this.findOne(query).select('-password -role').lean();
+};
+
+//fetches a user by their unique ID and excludes sensitive information like password and role
+userSchema.statics.getUserById = async function (id) {
+  return await this.findById(id).select('-password').lean();
+};
+
+//updates a user's profile information such as their bio and profile picture
+userSchema.methods.updateUser = async function (bio, filePath) {
+  if (bio) this.bio = bio;
+  if (filePath) {
+    this.profilePic = filePath;
+  }
+  return await this.save();
+};
+
+//get user by student Id
+userSchema.statics.getUserByStudentId = async (studentId) => {
+  try {
+    const user = await User.findOne({ idNumber: studentId });
+
+    if (!user) {
+      console.log('No user found with that ID');
+      return null;
+    }
+    return user;
+  } catch (err) {
+    console.error('Error fetching user:', err);
+  }
 };
 
 const User = mongoose.model('User', userSchema);

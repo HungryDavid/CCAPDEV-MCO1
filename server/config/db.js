@@ -4,6 +4,7 @@ const bcrypt = require("bcryptjs");
 const User = require("../users/User");
 const Laboratory = require("../labs/Lab");
 const Reservation = require("../reservations/Reservation");
+const { end } = require("@popperjs/core");
 
 const users = [
     {
@@ -33,15 +34,24 @@ const users = [
         idNumber: "12345674",
         role: "student",
         password: "password123"
+    },
+    {
+        name: "Juan Dela Cruz",
+        email: "juan_dela_cruz@dlsu.edu.ph",
+        idNumber: "12345678",
+        role: "student",
+        password: "password123"
     }
 ];
 
 const labs = [
-    { name: "GK101", capacity: 25, openTime: "07:30", closeTime: "23:59" },
-    { name: "VL205", capacity: 30, openTime: "07:30", closeTime: "23:59" },
-    { name: "AG1901", capacity: 40, openTime: "07:30", closeTime: "23:59" },
-    { name: "GK102", capacity: 25, openTime: "07:30", closeTime: "23:59" },
-    { name: "VL206", capacity: 25, openTime: "07:30", closeTime: "23:59" }
+    { name: "GK301", capacity: 25, openTime: 0, closeTime: 1439, image: "/imgs/gk-building.webp" },
+    { name: "GK302", capacity: 25, openTime: 0, closeTime: 1439, image: "/imgs/gk-building.webp" },
+    { name: "GK303", capacity: 25, openTime: 0, closeTime: 1439, image: "/imgs/gk-building.webp" },
+    { name: "VL205", capacity: 30, openTime: 0, closeTime: 1439, image: "/imgs/vl-building.webp" },
+    { name: "VL206", capacity: 30, openTime: 0, closeTime: 1439, image: "/imgs/vl-building.webp" },
+    { name: "AG1901", capacity: 40, openTime: 0, closeTime: 1439, image: "/imgs/ag-building.webp" },
+    { name: "SJ212", capacity: 40, openTime: 0, closeTime: 1439, image: "/imgs/sj-building.webp" }
 ];
 
 const seedDatabase = async () => {
@@ -67,33 +77,78 @@ const seedDatabase = async () => {
     const createdLabs = await Laboratory.insertMany(labs);
 
     const john = createdUsers.find(u => u.name === "John Doe");
+    const carl = createdUsers.find(u => u.name === "Carl Johnson");
     const jane = createdUsers.find(u => u.name === "Jane Smith");
+    const juan = createdUsers.find(u => u.name === "Juan Dela Cruz");
     const tech = createdUsers.find(u => u.role === "technician");
 
-    const gk101 = createdLabs.find(l => l.name === "GK101");
+    const gk301 = createdLabs.find(l => l.name === "GK301");
+    const gk302 = createdLabs.find(l => l.name === "GK302");
+    const gk303 = createdLabs.find(l => l.name === "GK303");
     const vl205 = createdLabs.find(l => l.name === "VL205");
 
+    const now = new Date();
+    const offset = now.getTimezoneOffset() * 60000;
+    const localISODate = new Date(now - offset).toISOString().split('T')[0];
+    const totalMinutes = (now.getHours() * 60) + now.getMinutes();
+    const roundedMinutes = Math.floor(totalMinutes / 30) * 30;
     const reservations = [
         {
             studentId: john._id,
-            laboratory: gk101._id,
-            date: "2026-03-20",
+            laboratory: gk301._id,
+            date: localISODate,
             anonymous: false,
-            slots: [{ seatNumber: 5, timeSlot: "09:00" }]
+            slots: [{ seatNumber: 1, startTime: roundedMinutes, endTime: roundedMinutes + 30 }]
         },
         {
             studentId: jane._id,
-            laboratory: gk101._id,
-            date: "2026-03-20",
-            anonymous: true,
-            slots: [{ seatNumber: 6, timeSlot: "09:00" }]
+            laboratory: gk301._id,
+            date: localISODate,
+            anonymous: false,
+            slots: [{ seatNumber: 2, startTime: roundedMinutes, endTime: roundedMinutes + 30 }]
         },
         {
-            studentId: tech._id,
-            laboratory: vl205._id,
-            date: "2026-03-20",
+            studentId: john._id,
+            laboratory: gk301._id,
+            date: localISODate,
             anonymous: false,
-            slots: [{ seatNumber: 12, timeSlot: "13:00" }]
+            slots: [{ seatNumber: 3, startTime: roundedMinutes+30, endTime: roundedMinutes + 60 }]
+        },
+        {
+            studentId: john._id,
+            laboratory: gk301._id,
+            date: localISODate,
+            anonymous: false,
+            slots: [{ seatNumber: 4, startTime: roundedMinutes+60, endTime: roundedMinutes + 90}]
+        }
+        ,
+        {
+            studentId: john._id,
+            laboratory: vl205._id,
+            date: localISODate,
+            anonymous: false,
+            slots: [{ seatNumber: 5, startTime: roundedMinutes, endTime: roundedMinutes + 30 }]
+        },
+        {
+            studentId: carl._id,
+            laboratory: gk302._id,
+            date: localISODate,
+            anonymous: false,
+            slots: [{ seatNumber: 6, startTime: roundedMinutes, endTime: roundedMinutes + 30 }]
+        },
+        {
+            studentId: juan._id,
+            laboratory: gk303._id,
+            date: localISODate,
+            anonymous: false,
+            slots: [{ seatNumber: 6, startTime: roundedMinutes, endTime: roundedMinutes + 30 }]
+        },
+        {
+            studentId: john._id,
+            laboratory: gk301._id,
+            date: localISODate,
+            anonymous: false,
+            slots: [{ seatNumber: 1, startTime: roundedMinutes-30, endTime: roundedMinutes}]
         }
     ];
 
@@ -116,6 +171,7 @@ const connectDB = async () => {
         console.log("- jane_smith@dlsu.edu.ph");
         console.log("- tech_admin@dlsu.edu.ph");
         console.log("- carl_johnson@dlsu.edu.ph");
+        console.log("- juan_dela_cruz@dlsu.edu.ph");
         console.log("Default Password: password123");
     } catch (err) {
         console.error(err);

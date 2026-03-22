@@ -1,48 +1,53 @@
 const Reservation = require('./Reservation');
 const Laboratory = require('../labs/Lab');
 const User = require('../users/User');
-const { getTimeSlots, renderErrorPage } = require('../util/helpers');
+const { getTimeSlots, renderErrorPage, timeToMinutes, minutesToTime } = require('../util/helpers');
 
+function formatReservationToCart(reservation) {
+  const formatted = {};
 
+  reservation.slots.forEach(slot => {
+    // We use the startTime as the key (e.g., 810 or 1050)
+    formatted[slot.startTime] = {
+      seatNumber: slot.seatNumber.toString(), // Ensures it is a string as requested
+      status: "Reserved" // Usually, if it's in the reservation object, it's reserved
+    };
+  });
+  return formatted;
+}
+
+function formatSlotsForSchema(cart) {
+  return Object.entries(cart).map(([timeKey, data]) => {
+    const startTime = parseInt(timeKey, 10);
+
+    return {
+      seatNumber: parseInt(data.seatNumber, 10),
+      startTime: startTime,
+      endTime: startTime + 30
+    };
+  })
+};
+
+// Create a new reservation
 exports.createReservation = async (req, res) => {
   try {
     const { isAnonymous, studentNumber, selectedLab, selectedDate, labCart } = req.body;
-    let studentId = req.session.userId;
+    let userId = req.session.userId;
 
     if (req.session.role === "technician") {
-      studentId = await User.getIdByStudentId(studentNumber);
+      let user = await User.getUserByStudentId(studentNumber);
+      userId = user._id;
     }
 
-    const labId = await Laboratory.getIdByName(selectedLab);
+    const lab = await Laboratory.getLabByName(selectedLab);
 
-    const slots = [];
-    for (const [timeSlot, seatObj] of Object.entries(labCart)) {
-      if (!seatObj || !seatObj.seatNumber) continue;
-
-      const seatNumber = Number(seatObj.seatNumber);
-      if (isNaN(seatNumber)) continue;
-
-      slots.push({ timeSlot, seatNumber });
-    }
-
-    if (slots.length === 0) {
-      return res.status(400).json({ message: "No seats selected." });
-    }
-
-    await Reservation.createReservation({
-      studentId,
-      isAnonymous,
-      laboratory: labId,
-      date: selectedDate,
-      slots
-    });
+    await Reservation.createReservation(userId, isAnonymous, lab._id, selectedDate, formatSlotsForSchema(labCart));
 
     res.status(200).json({
       message: "Reservation confirmed successfully!"
     });
 
   } catch (err) {
-    console.log(err);
     const statusCode = err.errorNumber || 500;
     const formattedMessage = `${err.errorMessage || err.message} (${statusCode})`;
 
@@ -52,11 +57,59 @@ exports.createReservation = async (req, res) => {
   }
 };
 
-exports.getReservationById = async (req, res) => {
+// Edit an existing reservation
+exports.loadReservationForUpdate = async (req, res) => {
   try {
-    const sessionUser = await User.readUserByIdSafe(req.session.userId).lean();
-    const reservations = await Reservation.getUpcomingReservationsByUser(req.session.userId);
-    const pastReservations = await Reservation.getPastReservationsByUser(req.session.userId);
+    let reservationId = req.params.id;
+
+    const reservation = await Reservation.getReservationById(reservationId);
+    const cartData = formatReservationToCart(reservation);
+
+    const labSeats = await Laboratory.getLabSeats(reservation.laboratory.name, reservation.slots[0].startTime, reservation.date);
+    const lab = await Laboratory.getLabByName(reservation.laboratory.name);
+    const timeSlotsArray = getTimeSlots(reservation.date, lab.openTime, lab.closeTime, 30);
+
+    res.render("lab-details", {
+      labSeats,
+      timeSlotsArray,
+      layout: "dashboard",
+      activePage: "slots-availability",
+      reservationId,
+      headerTitle: lab.name,
+      bookingDate: reservation.date,
+      cartSession: JSON.stringify(cartData),
+      lab: lab.toObject ? lab.toObject() : lab
+    });
+  } catch (err) {
+    renderErrorPage(res, err);
+  }
+};
+
+//Get Reservation
+exports.getReservationJSON = async (req, res) => {
+  try {
+    let { labName, bookingDate, bookingTime, seatNumber } = req.query;
+    console.log(labName, bookingDate, bookingTime, seatNumber);
+    const reservationId = await Reservation.getReservationIdByLabNameDateTimeSeat(
+      labName,
+      bookingDate,
+      bookingTime,
+      seatNumber
+    )
+    res.json({
+      redirectUrl: `/reservation/${reservationId}/update`
+    });
+  } catch (err) {
+    renderErrorPage(res, err);
+  }
+}
+
+// Get all reservations for a user
+exports.getUserReservations = async (req, res) => {
+  try {
+    const sessionUser = await User.getUserById(req.session.userId);
+    const reservations = await Reservation.getUpcomingUserReservations(sessionUser);
+    const pastReservations = await Reservation.getUserPastReservations(sessionUser);
     res.render('my-reservations', {
       user: sessionUser,
       account: sessionUser,
@@ -69,12 +122,11 @@ exports.getReservationById = async (req, res) => {
     });
 
   } catch (err) {
-    console.log(err);
-    res.status(404).send(err.message);
-
+    renderErrorPage(res, err);
   }
 };
 
+// Update an existing reservation
 exports.updateReservation = async (req, res) => {
   try {
     const { isAnonymous, reservationId, sessionCart } = req.body;
@@ -83,21 +135,11 @@ exports.updateReservation = async (req, res) => {
       return res.status(400).json({ message: 'Reservation ID and session cart are required.' });
     }
 
-    const updatedReservation = await Reservation.updateReservationFromCart(reservationId, sessionCart, isAnonymous);
-
-    const formattedSlots = {};
-    updatedReservation.slots.forEach(slot => {
-      formattedSlots[slot.timeSlot] = {
-        seatNumber: String(slot.seatNumber),
-        status: 'available'
-      };
-    });
+    const updatedReservation = await Reservation.updateReservation(reservationId, formatSlotsForSchema(sessionCart), isAnonymous);
 
     res.status(200).json({
-      message: 'Reservation updated successfully.',
-      reservationId: updatedReservation._id,
-      slots: formattedSlots
-    });
+      message: 'Reservation updated successfully',
+    })
 
   } catch (err) {
     console.error('Error updating reservation:', err);
@@ -107,7 +149,6 @@ exports.updateReservation = async (req, res) => {
     });
   }
 };
-
 
 exports.getReservations = async (req, res) => {
   try {
@@ -119,64 +160,37 @@ exports.getReservations = async (req, res) => {
     if (req.query.student) filter.studentId = req.query.student;
 
     const reservations = await Reservation.getReservations(filter);
-
     res.json(reservations);
 
   } catch (err) {
-
     res.status(500).send(err.message);
-
   }
 };
 
+// deletes a reservation
 exports.deleteReservation = async (req, res) => {
   try {
 
     const { labName, bookingDate, bookingTime, seatNumber } = req.body;
-    let seat;
-    if (seatNumber) {
-      seat = parseInt(seatNumber, 10);
-
-      if (isNaN(seat)) {
-        return res.status(400).send({ error: "Invalid seat number provided." });
-      }
-    }
 
     let { id } = req.body;
-    if (labName && bookingDate && bookingTime && seat) {
+    if (!id) {
       id = await Reservation.getReservationIdByLabNameDateTimeSeat(
         labName,
         bookingDate,
         bookingTime,
-        seat
+        seatNumber
       );
     }
-
     await Reservation.deleteReservation(id);
 
     if (req.session.role === "technician") {
-      res.redirect("/labs/slots-availability");
-    } else 
+      res.redirect("/labs/slots-availability/" + labName);
+    } else
       res.redirect("/reservation");
-    
-
   } catch (err) {
-
     console.log(err);
     res.status(404).send(err.message);
-
   }
 };
 
-exports.checkSeatAvailability = async (req, res, next) => {
-  try {
-    const { selectedLab, selectedDate, labCart } = req.body;
-    const timeSlots = Object.keys(labCart);
-    const seatNumbers = Object.values(labCart);
-    const labId = await Laboratory.getIdByName(selectedLab);
-    const slotStatus = await Reservation.checkSlotStatus(labId, selectedDate, labCart);
-    return res.json(slotStatus);
-  } catch (error) {
-    res.status(500).json({ message: "Internal server error" });
-  }
-};

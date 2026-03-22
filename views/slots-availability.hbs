@@ -21,8 +21,8 @@
         <label for="bookingTime" class="form-label">Time Slot:</label>
         <select id="bookingTime" name="bookingTime" class="form-select">
           {{#each timeSlotsArray}}
-          <option value="{{this}}" {{#if (eq this ../selectedTime)}}selected{{/if}}>
-            {{this}}
+          <option value="{{minutesToTime this}}" {{#if (eq this ../selectedTime)}}selected{{/if}}>
+            {{minutesToTime this}}
           </option>
           {{/each}}
         </select>
@@ -34,7 +34,15 @@
         <label for="labName" class="form-label">Lab Name:</label>
         <select id="labName" name="labName" class="form-select">
           <option value="" {{#unless selectedLabName}}selected{{/unless}}>All Labs</option>
-
+          <option value="AG" {{#if (eq selectedLabName "AG")}}selected{{/if}}>Br. Andrew Gonzales Hall</option>
+          <option value="EY" {{#if (eq selectedLabName "EY")}}selected{{/if}}>Don Enrique Yuchengco Hall</option>
+          <option value="GK" {{#if (eq selectedLabName "GK")}}selected{{/if}}>Gokongwei Hall</option>
+          <option value="LS" {{#if (eq selectedLabName "LS")}}selected{{/if}}>St. La Salle Hall</option>
+          <option value="MM" {{#if (eq selectedLabName "MM")}}selected{{/if}}>St. Mutien Marie Hall</option>
+          <option value="SJ" {{#if (eq selectedLabName "SJ")}}selected{{/if}}>St. Joseph Hall</option>
+          <option value="SM" {{#if (eq selectedLabName "SM")}}selected{{/if}}>St. Miguel Hall</option>
+          <option value="ST" {{#if (eq selectedLabName "ST")}}selected{{/if}}>Science & Technology Research Center</option>
+          <option value="VL" {{#if (eq selectedLabName "VL")}}selected{{/if}}>Velasco Hall</option>
           {{#each labNamesArray}}
           <option value="{{this}}" {{#if (eq this ../selectedLabName)}}selected{{/if}}>
             {{this}}
@@ -62,7 +70,7 @@
       <div class="card h-100 shadow-sm lab-card-hover">
 
         <div class="position-relative">
-          <img src="{{image}}" class="card-img-top" alt="{{name}}"
+          <img src="{{this.image}}" class="card-img-top" alt="{{name}}"
             style="height:150px; object-fit:cover; border-top-left-radius:.25rem; border-top-right-radius:.25rem;">
 
           <div class="position-absolute top-0 start-0 w-100 h-100 bg-success bg-opacity-50"
@@ -73,7 +81,7 @@
         <div class="card-body text-center">
           <h5 class="card-title">{{name}}</h5>
           <p class="card-text">
-            Available Slots: {{freeSeats}}
+            Available Slots: {{this.freeSeats}}
           </p>
 
           <!-- Submit button instead of link -->

@@ -1,84 +1,88 @@
 const User = require('./User');
 const Reservation = require('../reservations/Reservation');
+const {renderErrorPage } = require('../util/helpers');
 
 
-exports.getCurrentUser = async (req, res) => {
-    try {
-        const sessionUser = await User.readUserByIdSafe(req.session.userId).lean();
-        const reservations = await Reservation.getUpcomingReservationsByUser(req.session.userId);
-
-        res.render('partials/profile-card', {
-            user: sessionUser,
-            account: sessionUser,
-            title: 'My Profile',
-            headerTitle: 'My Profile',
-            layout: 'dashboard',
-            activePage: 'my-profile',
-            isOwner: true,
-            reservations
-        });
-
-    } catch (error) {
-        console.error(error);
-        res.redirect('/');
-    }
-};
-
-
+//updates a user's profile information such as their bio and profile picture
 exports.updateProfile = async (req, res) => {
-    try {
-        const user = await User.findById(req.session.userId);
-        const filePath = req.file ? `/uploads/${req.file.filename}` : null;
-        await user.updateUser(req.body, filePath);
-        res.redirect('/user/me');
-    } catch (error) {
-        console.log(error);
-        res.status(500).send("Error updating profile");
-    }
-}
-
-exports.deleteProfile = async (req, res) => {
-    try {
-        await User.deleteUser(req.session.userId);
-        req.session.destroy();
-        res.redirect('/');
-    } catch (err) {
-        res.status(400).send(err.message);
-    }
+  try {
+    const { bio } = req.body;
+    const user = await User.findById(req.session.userId);
+    const filePath = req.file ? `/uploads/${req.file.filename}` : null;
+    await user.updateUser(bio, filePath);
+    res.redirect('/user/me');
+  } catch (err) {
+    renderErrorPage(res, err);
+  }
 };
 
+//deletes a user from the database and also deletes all reservations associated with that user
+exports.deleteProfile = async (req, res) => {
+  try {
+    await User.deleteUser(req.session.userId);
+    req.session.destroy();
+    res.redirect('/auth/login');
+  } catch (err) {
+    renderErrorPage(res, err);
+  }
+};
+
+//fetches a user by their unique ID and excludes sensitive information like password and role
 exports.searchUser = async (req, res) => {
   try {
-    const sessionUserDoc = await User.readUserByIdSafe(req.session.userId);
-    const sessionUser = sessionUserDoc ? sessionUserDoc.toObject() : null;
     const query = req.query.q?.trim() || '';
     let searchedUser = null;
-    let searchedUserReservation = null
+    let searchedUserReservation;
+    let message = null;
     if (query) {
       try {
-        const searchedUserDoc = await User.readUserSafeAndPublic(query);
-        searchedUser = searchedUserDoc?.toObject() || null;
-        searchedUserReservation = await Reservation.getUpcomingReservationsByUser(searchedUser._id);
-      } catch (err) {
-        if (err.message !== 'User not found.') {
-          console.error('Error fetching user:', err);
+        searchedUser = await User.searchUser(query);
+
+        if (!searchedUser){
+          throw new Error ("No User Found");
         }
-        searchedUser = null; 
+
+        searchedUserReservation = await Reservation.getUserPublicReservation(searchedUser._id);
+        
+      } catch (err) {
+        message = 'No user found matching the search criteria.';
+        searchedUser = null;
       }
     }
-      
-      res.render('search-profile', {
+
+    res.render('search-profile', {
       title: 'Search Users',
       headerTitle: 'Search User',
       layout: 'dashboard',
       activePage: 'search-user',
-      user: sessionUser,
       account: searchedUser,
+      reservations: searchedUserReservation,
+      isOwner: false,
       searchQuery: query,
-      reservations: searchedUserReservation
+    })
+  } catch (err) {
+    renderErrorPage(res, err);
+  }
+};
+
+//fetches the profile of the currently logged-in user and their reservations, then renders the profile page
+exports.getCurrentUserProfile = async (req, res) => {
+  try {
+    const user = await User.getUserById(req.session.userId);
+    const reservations = await Reservation.getAllUserReservation(req.session.userId);
+
+    console.log('User:', user);
+    res.render('partials/profile-card', {
+      title: 'My Profile',
+      headerTitle: 'My Profile',
+      layout: 'dashboard',
+      activePage: 'my-profile',
+      account: user,
+      isOwner: true,
+      reservations
     });
 
-  } catch (error) {
-    res.redirect('/');
+  } catch (err) {
+    renderErrorPage(res, err);
   }
 };

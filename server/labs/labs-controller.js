@@ -1,36 +1,52 @@
 const Laboratory = require('./Lab');
 const Reservation = require('../reservations/Reservation');
-const { getTimeSlots, renderErrorPage } = require('../util/helpers');
+const { timeToMinutes, getTimeSlots, renderErrorPage } = require('../util/helpers');
+const bldgAbbreviations = ['SM', 'EY', 'VL', 'SJ', 'GK', 'LS', 'AG', 'ST', 'MM'];
 
+// Load the manage labs page with all labs
 exports.getManageLabsPage = async (req, res) => {
   try {
-    const labs = await Laboratory.getAllLabs(req.query);
-    console.log(labs);  
+    const labs = await Laboratory.getAllLabs();
     res.render('manage-labs', {
       title: 'Manage Labs',
       headerTitle: 'Manage Labs',
       layout: 'dashboard',
       activePage: 'manage-labs',
-      labs
+      labs,
+      bldgAbbreviations: bldgAbbreviations.sort()
     });
 
-  } catch (error) {
-    console.error(error);
-    res.redirect('/');
+  } catch (err) {
+    renderErrorPage(res, err);
   }
 };
 
+// Create a new lab
+exports.createLab = async (req, res) => {
+  try {
+    let { roomNumber, capacity, buildingAbbreviation, openTime, closeTime } = req.body;
+
+    name = buildingAbbreviation + roomNumber;
+    openTime = timeToMinutes(openTime);
+    closeTime = timeToMinutes(closeTime);
+
+    await Laboratory.createLab(name, capacity, openTime, closeTime);
+    res.redirect('/labs/manage');
+  } catch (error) {
+    res.status(500).send('Error creating lab');
+  }
+};
+
+// Get all available labs for a specific date and time
 exports.getAllAvailableLabs = async (req, res) => {
   try {
-    
+
     const selectedDate = req.query.bookingDate || new Date().toLocaleDateString('en-CA');
     const selectedLabName = req.query.labName || null;
     const datesArray = getNextNDates(7);
-    const timeSlotsArray = getTimeSlots(30, "00:00", "23:59", req.query.bookingDate);
-
-
-    const selectedTime = req.query.bookingTime || (timeSlotsArray.length > 0 ? timeSlotsArray[0] : null);
-    const availableLabs = await Laboratory.getAvailableLabs(selectedDate, selectedTime, [selectedLabName]);
+    const timeSlotsArray = getTimeSlots(selectedDate, 0, 1440, 30);
+    const selectedTime = timeToMinutes(req.query.bookingTime) || (timeSlotsArray.length > 0 ? timeSlotsArray[0] : null);
+    const availableLabs = await Laboratory.getAvailableLabs(selectedDate, selectedTime, selectedLabName);
     const availableLabsNoRoomFilter = await Laboratory.getAvailableLabs(selectedDate, selectedTime);
     const labNamesArray = availableLabsNoRoomFilter.map(lab => lab.name);
 
@@ -47,67 +63,28 @@ exports.getAllAvailableLabs = async (req, res) => {
       selectedLabName,
       availableLabs
     });
-
   } catch (err) {
-    console.log(err);
+    renderErrorPage(res, err);
   }
 };
 
 
-exports.createLab = async (req, res) => {
-  try {
-    const { name, capacity, openTime, closeTime, image } = req.body;
-
-    const labData = {
-      name,
-      capacity,
-      openTime,
-      closeTime,
-      image: image || 'lab-default.jpg'
-    };
-
-    const newLab = await Laboratory.createLab(labData);
-    res.redirect('/labs/manage');
-  } catch (error) {
-    res.status(500).send('Error creating lab');
-  }
-};
-
-exports.getLabById = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const lab = await Laboratory.getLabById(id);
-    if (!lab) {
-      return res.status(404).send('Lab not found');
-    }
-    res.render('/labs/manage', { lab }); 
-  } catch (error) {
-    console.error(error);
-    res.status(500).send('Error fetching lab for editing');
-  }
-};
-
+//Update a lab by ID
 exports.updateLab = async (req, res) => {
   try {
-    const labId = req.params.id; 
-    const { name, openTime, closeTime, capacity } = req.body; 
+    const labId = req.params.id;
 
-    const updatedLab = await Laboratory.updateLab(labId, {
-      name,
-      openTime,
-      closeTime,
-      capacity
-    });
+    const { buildingAbbreviation, roomNumber, openTime, closeTime, capacity } = req.body;
+    const updatedLab = await Laboratory.updateLab(labId, buildingAbbreviation + roomNumber, timeToMinutes(openTime), timeToMinutes(closeTime), capacity);
 
-    res.redirect('/labs/manage'); 
+    res.redirect('/labs/manage');
 
   } catch (error) {
-    console.error(error);
-    res.status(500).send("An error occurred while updating the lab.");
+    renderErrorPage(res, error);
   }
 };
 
-// 5. DELETE: Delete a lab by ID
+// Delete a lab by ID
 exports.deleteLab = async (req, res) => {
   try {
     const { id } = req.params;
@@ -117,59 +94,32 @@ exports.deleteLab = async (req, res) => {
       return res.status(404).send('Lab not found');
     }
 
-    res.redirect('/labs/manage'); 
+    res.redirect('/labs/manage');
   } catch (error) {
     res.status(500).send('Error deleting lab');
   }
 };
 
-exports.getLabSeats = async (req, res) => {
+// Get details of a specific lab, including seat availability for a given date and time
+exports.getLab = async (req, res) => {
   try {
 
-    let {seatNumber, bookingTime, bookingDate, labName, cartSession, reservationId } = req.body;
-    let selectedDate = bookingDate;
-    let selectedTime = bookingTime;
-    let selectedLabName = labName;
-    let reservation;
+    let { bookingTime, bookingDate, labName } = req.body;
 
-    if (seatNumber){
-      reservationId = await Reservation.getReservationIdByLabNameDateTimeSeat(labName, bookingDate, bookingTime, seatNumber)
-    }
+    const labSeats = await Laboratory.getLabSeats(labName, timeToMinutes(bookingTime), bookingDate);
+    const lab = await Laboratory.getLabByName(labName);
+    const timeSlotsArray = getTimeSlots(bookingDate, lab.openTime, lab.closeTime, 30);
 
-    if (reservationId) {
-      reservation = await Reservation.getReservationById(reservationId); 4
-      selectedTime = reservation.slots?.[0]?.timeSlot; 
-      selectedLabName = reservation.laboratory?.name; 
-      selectedDate = reservation.date;
-      
-      cartSession = {}
-      reservation.slots.forEach(slot => {
-        cartSession[slot.timeSlot] = {
-          seatNumber: String(slot.seatNumber), 
-          status: 'checking...'
-        };
-      });
-    } 
-
-    
-    const labId = await Laboratory.getIdByName(selectedLabName);
-    const lab = await Laboratory.getLabById(labId);
-    const labSeats = await Laboratory.getLabSeats(selectedLabName, selectedTime, selectedDate);
-    const timeSlotsArray = getTimeSlots(30, lab.openTime, lab.closeTime, selectedDate);
-  
     res.render("lab-details", {
       labSeats,
-      selectedDate,
-      selectedTime,
       timeSlotsArray,
       layout: "dashboard",
       activePage: "slots-availability",
       headerTitle: lab.name,
-      lab,
-      cartSession: JSON.stringify(cartSession),
-      reservation,
-      isTechnician: req.session.role === "technician",
-      isLoggedIn: req.session.role
+      bookingDate,
+      user: res.locals.user,
+      bookingTime: timeToMinutes(bookingTime),
+      lab: lab.toObject ? lab.toObject() : lab
     });
   } catch (err) {
     renderErrorPage(res, err);
@@ -177,16 +127,32 @@ exports.getLabSeats = async (req, res) => {
 };
 
 
+// Get seat availability for a specific lab, date, and time
 exports.getSeatStatus = async (req, res) => {
   try {
-    const selectedDate = req.query.bookingDate;
-    const selectedTime = req.query.bookingTime;
-    const selectedLabName = req.params.labName;
-    const labSeats = await Laboratory.getLabSeats(selectedLabName, selectedTime, selectedDate);
-    return res.json(labSeats);
+    const { labName, bookingDate, bookingTime } = req.query;
+
+    if (!labName || !bookingDate || !bookingTime) {
+      return res.status(400).json({ error: "Missing parameters" });
+    }
+
+    const seats = await Laboratory.getLabSeats(labName, bookingTime, bookingDate);
+    res.json({ labSeats: seats });
 
   } catch (err) {
-    res.redirect("/");
+    renderErrorPage(res, err);
+  }
+};
+
+// Get cart availability for a specific lab, date, and time
+exports.getCartStatus = async (req, res) => {
+  try {
+    const { labName, date, cartData } = req.body;
+    const updatedStatus = await Reservation.checkCartStatus(labName, date, cartData);
+    res.json(updatedStatus);
+
+  } catch (err) {
+    renderErrorPage(res, err);
   }
 };
 
