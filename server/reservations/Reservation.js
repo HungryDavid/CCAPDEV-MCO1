@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 const CustomError = require('../util/CustomError');
-const moment = require('moment');
-const { timeToMinutes, minutesToTime } = require('../util/helpers');
+const {minutesToTime } = require('../util/helpers');
 
 const reservationSchema = new mongoose.Schema({
   studentId: {

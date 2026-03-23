@@ -4,7 +4,6 @@ const bcrypt = require("bcryptjs");
 const User = require("../users/User");
 const Laboratory = require("../labs/Lab");
 const Reservation = require("../reservations/Reservation");
-const { end } = require("@popperjs/core");
 
 const users = [
     {

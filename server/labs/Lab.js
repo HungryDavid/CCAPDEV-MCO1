@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 const Reservation = require('../reservations/Reservation');
-const moment = require('moment');
 const CustomError = require('../util/CustomError');
 
 const laboratorySchema = new mongoose.Schema({

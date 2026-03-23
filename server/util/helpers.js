@@ -2,11 +2,6 @@ const moment = require('moment'); // npm install moment
 const hbs = require('hbs');
 
 module.exports = {
-    // FORMAT DATE
-    formatDate: function (date, format) {
-        return moment(date).format(format);
-    },
-
     // EQUALITY CHECK
     eq: function (a, b) {
         return a === b;
