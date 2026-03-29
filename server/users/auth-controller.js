@@ -11,6 +11,10 @@ const getAboutUsPage = (req, res) => {
 //GET LOGIN
 const getLoginPage = (req, res) => {
     const message = req.flash('error');
+    if (req.session.userId){
+        res.redirect('/labs/slots-availability');
+    } 
+
     res.render('login', {
         title: 'Login',
         layout: 'auth',
