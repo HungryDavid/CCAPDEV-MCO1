@@ -89,7 +89,6 @@ exports.loadReservationForUpdate = async (req, res) => {
 exports.getReservationJSON = async (req, res) => {
   try {
     let { labName, bookingDate, bookingTime, seatNumber } = req.query;
-    console.log(labName, bookingDate, bookingTime, seatNumber);
     const reservationId = await Reservation.getReservationIdByLabNameDateTimeSeat(
       labName,
       bookingDate,

@@ -161,7 +161,7 @@ userSchema.statics.deleteUser = async function (userId) {
       { date: { $gt: todayStr } },
       {
         date: todayStr,
-        'slots.endTime': { $gt: currentMinutes }
+        'slots.startTime': { $gt: currentMinutes }
       }
     ]
   });

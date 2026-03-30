@@ -71,7 +71,6 @@ exports.getCurrentUserProfile = async (req, res) => {
     const user = await User.getUserById(req.session.userId);
     const reservations = await Reservation.getAllUserReservation(req.session.userId);
 
-    console.log('User:', user);
     res.render('partials/profile-card', {
       title: 'My Profile',
       headerTitle: 'My Profile',

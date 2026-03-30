@@ -138,7 +138,6 @@ reservationSchema.statics.checkCartStatus = async function (labName, date, check
 // Check if the user already reserved a seat for the same lab, date, and time
 reservationSchema.statics.checkUserReservationConflict = async function (userId, date, slots, operation='create') {
   for (const slot of slots) {
-    console.log(`Checking reservation conflict for student ${userId} on ${date} at ${slot.startTime} minutes...`);
     const existing = await this.findOne({
       studentId: userId,
       date: date,
